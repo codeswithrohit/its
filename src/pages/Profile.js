@@ -10,8 +10,9 @@ import {
   FaLifeRing, 
   FaUserCircle, 
   FaBars, 
-  FaTimes ,
-  FaSignOutAlt
+  FaTimes,
+  FaSignOutAlt,
+  FaMoneyCheckAlt // Import the Withdraw icon
 } from 'react-icons/fa';
 import 'tailwindcss/tailwind.css';
 import { useNavigate } from 'react-router-dom';
@@ -22,6 +23,7 @@ import LevelIncome from '../component/Refferal/Levelincome';
 import RetopupIncome from '../component/Refferal/Retopup';
 import Walllet from '../component/Wallet';
 import Profiles from '../component/Profile';
+import Withdraw from '../component/Withdraw'; // Import the Withdraw component
 
 const Profile = () => {
   const navigate = useNavigate(); 
@@ -82,10 +84,12 @@ const Profile = () => {
         return <div><Directincome /></div>;
       case 'Trade Income':
         return <div><Investmentincome /></div>;
-      case 'Affilate Income':
+      case 'Affiliate Income':
         return <div><LevelIncome /></div>;
       case 'Wallet':
         return <div><Walllet /></div>;
+      case 'Withdraw': // Add case for Withdraw tab
+        return <div><Withdraw /></div>;
       default:
         return <div>Dashboard Content</div>;
     }
@@ -111,31 +115,36 @@ const Profile = () => {
       <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white flex flex-col transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:w-64`}>
         <div className="p-4 text-center text-xl font-bold border-b border-gray-700">Dashboard</div>
         <nav className="flex flex-col space-y-4 mt-4 p-4">
-          {[
-            { name: 'Dashboard', icon: <FaTachometerAlt /> },
-            { name: 'Profile', icon: <FaUser /> },
-            { name: 'Sponsor Income', icon: <FaWallet /> },
-            { name: 'Trade Income', icon: <FaChartLine /> },
-            { name: 'Affilate Income', icon: <FaUsers /> },
-            { name: 'Wallet', icon: <FaWallet /> },
-            { name: 'Logout', icon: <FaSignOutAlt /> }
-          ].map((tab, index) => (
-            <button
-              key={index}
-              className={`flex items-center space-x-2 p-2 rounded hover:bg-white hover:text-black ${activeTab === tab.name ? 'bg-black text-white' : ''}`}
-              onClick={() => {
-                if (tab.name === 'Logout') {
-                  handleLogout();
-                } else {
-                  setActiveTab(tab.name);
-                }
-              }}
-            >
-              {tab.icon}
-              <span>{tab.name}</span>
-            </button>
-          ))}
-        </nav>
+  {[
+    { name: 'Dashboard', icon: <FaTachometerAlt /> },
+    { name: 'Profile', icon: <FaUser /> },
+    { name: 'Sponsor Income', icon: <FaWallet /> },
+    { name: 'Trade Income', icon: <FaChartLine /> },
+    { name: 'Affiliate Income', icon: <FaUsers /> },
+    { name: 'Wallet', icon: <FaWallet /> },
+    { name: 'Withdraw', icon: <FaMoneyCheckAlt /> }, // Add Withdraw tab here
+    { name: 'Logout', icon: <FaSignOutAlt /> }
+  ].map((tab, index) => (
+    <button
+      key={index}
+      className={`flex items-center space-x-2 p-2 rounded hover:bg-white hover:text-black ${activeTab === tab.name ? 'bg-black text-white' : ''}`}
+      onClick={() => {
+        if (tab.name === 'Logout') {
+          handleLogout();
+        } else {
+          setActiveTab(tab.name);
+          if (window.innerWidth <= 768) { // Check if the screen size is mobile
+            setIsSidebarOpen(false); // Close sidebar on mobile
+          }
+        }
+      }}
+    >
+      {tab.icon}
+      <span>{tab.name}</span>
+    </button>
+  ))}
+</nav>
+
       </div>
 
       <div className="flex-1 py-4 bg-opacity-80 ">

@@ -143,32 +143,32 @@ const Investmentincome = () => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="flex justify-center items-center min-h-screen ">
       <div className="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">Investment Income Summary</h1>
+        <h1 className="text-2xl font-bold text-white mb-6 text-center">Investment Income Summary</h1>
 
         {/* Total Deposit */}
         <div className="mb-4">
           <p className="text-lg text-gray-600">Total Deposit for Gainbot</p>
-          <p className="text-3xl font-bold text-gray-900">₹{totalDeposit.toFixed(2)}</p>
+          <p className="text-3xl font-bold text-gray-900">${totalDeposit.toFixed(2)}</p>
         </div>
 
         {/* 15% Charge Deduction */}
         <div className="mb-4">
           <p className="text-lg text-gray-600">15% Charge Deduction</p>
-          <p className="text-2xl font-semibold text-red-600">- ₹{charge.toFixed(2)}</p>
+          <p className="text-2xl font-semibold text-red-600">- ${charge.toFixed(2)}</p>
         </div>
 
         {/* Available Amount */}
         <div className="border-t border-gray-300 pt-4 mb-4">
           <p className="text-lg text-gray-600">Available Balance after Deduction</p>
-          <p className="text-3xl font-bold text-green-600">₹{totalAfterDeduction.toFixed(2)}</p>
+          <p className="text-3xl font-bold text-green-600">${totalAfterDeduction.toFixed(2)}</p>
         </div>
 
         {/* 0.56% of Available Amount */}
         <div className="border-t border-gray-300 pt-4">
           <p className="text-lg text-gray-600">You have Daily Rewards</p>
-          <p className="text-2xl font-bold text-blue-600">₹{percentageAmount.toFixed(2)}</p>
+          <p className="text-2xl font-bold text-blue-600">${percentageAmount.toFixed(2)}</p>
         </div>
       </div>
     </div>

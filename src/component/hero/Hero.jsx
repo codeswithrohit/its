@@ -12,7 +12,7 @@ const Hero = () => {
         <div class="row align-items-center gy-5">
             <div class="col-lg-7">
                 <div class="banner-content">
-                    <h1>The world’s most customizable crypto trading bot</h1>
+                    <h1>Growth artificial intelligence navigation bot</h1>
                     <p>The bot, according to the specified parameters and based on AI, automatically opens transactions on the futures market in the BTC/USDT pair, sets entry points and exit points. The bot uses the trading balance of all users in small parts. This minimizes risks and allows you to always be in profit both on the long and at a short distance.</p>
                     <div class="d-flex justify-content-between align-items-end gap-lg-4 gap-2">
                         <div class="d-flex justify-content-start align-items-center flex-lg-nowrap flex-wrap-reverse gap-4">

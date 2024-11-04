@@ -3,10 +3,12 @@ import { FaCopy, FaShare, FaWallet, FaUsers, FaCaretUp, FaExchangeAlt } from 're
 
 const Dashboard = ({ userData, usersData }) => {
   const [copied, setCopied] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupData, setPopupData] = useState([]);
 
   const copyToClipboard = () => {
     const textField = document.createElement('textarea');
-    textField.innerText = `http://gainbot.techbabua.com/register?referral=${userData?.tokenId}`;
+    textField.innerText = `https://gainbot.io/register?referral=${userData?.tokenId}`;
     document.body.appendChild(textField);
     textField.select();
     document.execCommand('copy');
@@ -20,7 +22,7 @@ const Dashboard = ({ userData, usersData }) => {
       await navigator.share({
         title: 'Share Referral Link',
         text: 'Join me on GainBot and earn rewards!',
-        url: `http://gainbot.techbabua.com/register?referral=${userData?.tokenId}`,
+        url: `https://gainbot.io/register?referral=${userData?.tokenId}`,
       });
     } catch (error) {
       console.error('Sharing failed', error);
@@ -34,9 +36,18 @@ const Dashboard = ({ userData, usersData }) => {
   const myProfit = transactions
     .filter(tx => tx.title.startsWith("Investment Income"))
     .reduce((total, tx) => total + parseFloat(tx.amount || 0), 0);
+  
   const walletBalance = transactions
-    .filter(tx => tx.method.startsWith("Deposit") && (tx.Status === "Paid" || !tx.Status))
-    .reduce((total, tx) => total + parseFloat(tx.amount || 0), 0);
+    .reduce((total, tx) => {
+      if (tx.method.startsWith("Deposit") && (tx.Status === "Paid" || !tx.Status)) {
+        return total + parseFloat(tx.amount || 0);
+      }
+      if (tx.method.startsWith("Withdraw") && (tx.Status === "Pending" || tx.Status === "Paid")) {
+        return total - parseFloat(tx.amount || 0);
+      }
+      return total;
+    }, 0);
+
   const totalProfit = transactions
     .filter(tx => tx.title !== "Deposit for gainbot")
     .reduce((total, tx) => total + parseFloat(tx.amount || 0), 0);
@@ -46,29 +57,41 @@ const Dashboard = ({ userData, usersData }) => {
     const referralIds = user.referralId ? user.referralId.split(',') : [];
     return referralIds.includes(userTokenId);
   }).length;
+  
   const totalDirect = usersData.filter(user => {
     const referralIds = user.referralId ? user.referralId.split(',') : [];
     return referralIds[0] === userTokenId;
   }).length;
 
+  // Function to show pop-up with user data
+  const handleViewDirect = () => {
+    const directUsers = usersData.filter(user => user.referralId?.split(',')[0] === userTokenId);
+    setPopupData(directUsers);
+    setShowPopup(true);
+  };
+
+  const handleViewTeam = () => {
+    const teamUsers = usersData.filter(user => user.referralId?.includes(userTokenId));
+    setPopupData(teamUsers);
+    setShowPopup(true);
+  };
+
   return (
-    <div className="min-h-screen  px-4 py-8">
+    <div className="min-h-screen px-4 py-8">
       <h1 className="text-4xl font-bold text-gray-900 text-center mb-8">Welcome, {userData?.name}</h1>
 
-      <div className=" bg-white rounded-lg shadow-lg p-6 mb-8 max-w-xl mx-auto">
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-8 max-w-xl mx-auto">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4 text-center">Your Referral Code</h2>
         <div className="flex items-center justify-center space-x-4">
           <input
             type="text"
             readOnly
-            value={`http://gainbot.techbabua.com/register?referral=${userData?.tokenId}`}
+            value={`https://gainbot.io/register?referral=${userData?.tokenId}`}
             className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none"
           />
           <button
             onClick={copyToClipboard}
-            className={`px-4 py-2 text-white rounded-lg transition ${
-              copied ? 'bg-green-500' : 'bg-blue-600 hover:bg-blue-700'
-            }`}
+            className={`px-4 py-2 text-white rounded-lg transition ${copied ? 'bg-green-500' : 'bg-blue-600 hover:bg-blue-700'}`}
           >
             {copied ? 'Copied!' : 'Copy'}
           </button>
@@ -103,14 +126,16 @@ const Dashboard = ({ userData, usersData }) => {
           icon: <FaUsers />,
           bg: 'bg-gradient-to-b from-pink-200 to-pink-100',
           borderColor: 'border-pink-500',
-          iconColor: 'bg-pink-600'
+          iconColor: 'bg-pink-600',
+          onClick: handleViewDirect
         }, {
           title: 'My Team',
           value: totalUsers,
           icon: <FaUsers />,
           bg: 'bg-gradient-to-b from-yellow-200 to-yellow-100',
           borderColor: 'border-yellow-500',
-          iconColor: 'bg-yellow-500'
+          iconColor: 'bg-yellow-500',
+          onClick: handleViewTeam
         }, {
           title: 'Wallet Balance',
           value: `$${walletBalance.toFixed(2)}`,
@@ -134,11 +159,38 @@ const Dashboard = ({ userData, usersData }) => {
               <div className="flex-1 text-right ml-4">
                 <h2 className="font-semibold text-gray-700">{card.title}</h2>
                 <p className="text-3xl font-bold text-gray-900">{card.value}</p>
+                {card.onClick && (
+                  <button onClick={card.onClick} className="text-blue-600 hover:underline mt-2">View</button>
+                )}
               </div>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Pop-Up for displaying user data */}
+      {showPopup && (
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <div className="bg-white rounded-lg p-6 w-full h-auto max-h-[80vh] overflow-y-auto mx-auto">
+      <h2 className="text-xl font-bold mb-4">User Details</h2>
+      <ul className="space-y-2">
+        {popupData.map((user, index) => (
+          <li key={index} className="border-b pb-2">
+            <p>Name: {user.name} {user.lname}</p>
+            <p>Token ID: {user.tokenId}</p>
+          </li>
+        ))}
+      </ul>
+      <button
+        onClick={() => setShowPopup(false)}
+        className="mt-4 bg-red-600 text-white px-4 py-2 rounded"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+  
+      )}
     </div>
   );
 };

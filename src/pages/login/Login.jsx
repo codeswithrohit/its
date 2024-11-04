@@ -113,7 +113,7 @@ const Login = () => {
 
                         <div class="col-sm-6 text-sm-end text-start d-flex justify-content-sm-end justify-content-start">
                           <div class="forgot-pass">
-                            <a href="#">Forgot your password?</a>
+                            <a href="/forgotpassword">Forgot your password?</a>
                           </div>
                         </div>
                         <div className="!mt-8">
@@ -137,7 +137,7 @@ const Login = () => {
               </div>
               <div class="col-xl-6 col-lg-6">
                 <div class="form-left">
-                  <a href="index.html" class="logo" data-cursor="Home">
+                  <a href="/" class="logo" data-cursor="Home">
                     <img
                       src="https://gainbot.io/assets/files/FEStVr9r2DrfajwT.png"
                       alt="Logo"

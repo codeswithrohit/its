@@ -66,7 +66,7 @@ const Walllet = () => {
   }, []); // Empty dependency array ensures this runs only once when component mounts
 
   const calculateTotalBalance = (transactions) => {
-    // console.log("transactions", transactions); // Log the transactions array
+    console.log("transactions", transactions); // Log the transactions array
 
     const total = transactions.reduce((acc, transaction) => {
         // Check if the transaction method is 'Deposit'
@@ -76,11 +76,22 @@ const Walllet = () => {
                 return acc + parseFloat(transaction.amount); // Add the amount to the accumulator
             }
         }
+
+        // Check if the transaction method is 'Withdraw'
+        if (transaction.method === 'Withdraw') {
+            // Check if the Status is 'Pending' or 'Paid'
+            if (transaction.Status === 'Pending' || transaction.Status === 'Paid') {
+                return acc - parseFloat(transaction.amount); // Subtract the amount from the accumulator
+            }
+            // If status is 'Failed', do nothing (the accumulator remains unchanged)
+        }
+
         return acc; // Return the accumulator unchanged if conditions aren't met
     }, 0);
 
     setTotalBalance(total); // Set the total balance
 };
+
 
 
   const handleFileChange = (e) => {
@@ -153,17 +164,17 @@ const Walllet = () => {
   };
 
   return (
-    <div className="flex bg-white ">
+    <div className="flex  ">
          {userloading && (
         <div className="absolute inset-0 flex justify-center items-center bg-gray-50 z-50">
           <BeatLoader loading={userloading} size={30} />
         </div>
       )}
      <div className="w-full px-4 flex flex-col md:flex-row md:space-x-6 space-y-6">
-     <div className="w-96 md:w-[70%] bg-white p-6 rounded-lg shadow-lg">
+     <div className="w-96 md:w-[70%]  p-6 rounded-lg shadow-lg">
           {/* Balance section */}
           <div className="mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900">Balance</h2>
+            <h2 className="text-2xl font-semibold text-white">Balance</h2>
             <p className="text-4xl font-bold flex items-center text-green-600 mt-2">
   <FaDollarSign className="mr-2" /> {totalBalance.toFixed(2)} {/* Show total balance with 2 decimal places */}
 </p>
@@ -191,11 +202,13 @@ const Walllet = () => {
               <p className="text-sm text-center text-gray-500">{new Date(transaction.date).toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-lg font-bold text-green-600">
-                <FaDollarSign className="inline mr-1" /> +{transaction.amount} <br />
-                {/* <span className='text-gray-900 text-md'>Bal: $ {transaction.totalbalance}</span> */}
-              </p>
-            </div>
+  <p className={`text-lg font-bold ${transaction.method === 'Withdraw' ? 'text-red-500' : 'text-green-600'}`}>
+    <FaDollarSign className="inline mr-1" />
+    {transaction.method === 'Withdraw' ? '-' : '+'}{transaction.amount} <br />
+    {/* <span className='text-gray-900 text-md'>Bal: $ {transaction.totalbalance}</span> */}
+  </p>
+</div>
+
           </div>
         ))
     ) : (

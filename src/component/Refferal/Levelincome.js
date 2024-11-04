@@ -166,8 +166,8 @@ const Directincome = () => {
   const userTokenId = userData.tokenId;
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
-      <h1 className="text-4xl font-bold text-center mb-10 text-gray-800">Level Income</h1>
+    <div className="p-8  min-h-screen">
+      <h1 className="text-4xl font-bold text-center mb-10 text-white">Level Income</h1>
 
       {/* Users Table for Levels 1 to 15 */}
       {[...Array(15)].map((_, level) => {
@@ -192,7 +192,7 @@ const Directincome = () => {
                 {levelUsers.length > 0 ? (
                   levelUsers.map((user) => (
                     <tr key={user.id} className="hover:bg-gray-100">
-                      <td className="py-3 px-4 border-b">{user.name}</td>
+                      <td className="py-3 px-4 border-b">{user.name} {user.lname}</td>
                       <td className="py-3 px-4 border-b">{user.number}</td>
                       <td className="py-3 px-4 border-b">{user.email}</td>
                       <td className="py-3 px-4 border-b text-center">

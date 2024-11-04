@@ -15,6 +15,7 @@ import Profile from './pages/Profile';
 import { useState, useEffect } from "react";
 import { firebase } from '../src/Firebase/config';
 import Article from './pages/article/Article';
+import ForgotPassword from './pages/Forgotpassword/forgotpassword';
 
 function App() {
 
@@ -45,6 +46,7 @@ function App() {
                 const data = doc.data();
                 if (JSON.stringify(userData) !== JSON.stringify(data)) {
                   console.log("Data updated:", data);
+                  
                   setUserData(data);
                   setLoading(false);
                   const transactions = data.Transaction || [];
@@ -69,8 +71,6 @@ function App() {
                   console.log("No data update, forcing income distribution.");
                   // Call distributeInvestmentIncome when there are no data updates
                   distributeInvestmentIncome();
-                  distributeDirectIncome()
-                  distributeLevelIncome()
                 }
               } else {
                 console.log("No user data found");
@@ -121,15 +121,12 @@ function App() {
       const userDoc = await userRef.get();
       const transactions = userDoc.data().Transaction || [];
   
-      
-  
       // Check if any transaction with title "Deposit" exists
       const hasDeposit = transactions.some(
         transaction => transaction.title === "Deposit for gainbot" && transaction.Status === "Paid"
       );
-      
   
-      if (hasDeposit ) {
+      if (hasDeposit) {
         // Filter and sort investment income transactions by date
         const investmentIncomeTransactions = transactions
           .filter(transaction => transaction.title.startsWith("Investment Income"))
@@ -143,18 +140,33 @@ function App() {
           console.log("First income date:", firstIncomeDate);
           console.log("Last income date:", lastIncomeDate);
   
-          if (!lastIncomeDate) {
-            lastIncomeDate = lastUpdated ? lastUpdated.toDate() : null;
+          const today = new Date();
+          const todayString = today.toLocaleDateString();
+          const existingIncomeToday = transactions.some(
+            transaction => transaction.title === `Investment Income of ${todayString}`
+          );
+  
+          if (!existingIncomeToday) {
+            const uniqueDepositId = `InvestmentIncome_${myuser.uid}_${today.toISOString()}`;
+            const depositData = {
+              id: uniqueDepositId,
+              amount: percentageAmount.toFixed(2),
+              date: today.toISOString(),
+              method: 'Deposit',
+              title: `Investment Income of ${todayString}`,
+            };
+  
+            await userRef.update({
+              Transaction: firebase.firestore.FieldValue.arrayUnion(depositData),
+              lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+  
+            console.log(`Transaction updated for user: ${myuser.uid} on ${todayString}`);
+          } else {
+            console.log(`Deposit already exists for today: ${todayString}`);
           }
   
-          if (!lastIncomeDate) {
-            console.error('No last update date available to determine missing days.');
-            return;
-          }
-  
-          const daysBetweenFirstAndLast = Math.floor((lastIncomeDate - firstIncomeDate) / (1000 * 60 * 60 * 24));
-          console.log(`Total days between first and last income date: ${daysBetweenFirstAndLast}`);
-  
+          // Calculate missing dates between first and last income dates
           const missingDates = [];
           let currentDate = new Date(firstIncomeDate);
           currentDate.setDate(currentDate.getDate() + 1);
@@ -175,72 +187,63 @@ function App() {
           console.log(`Missing investment income for ${totalMissingDays} days.`);
           console.log("Missing dates:", missingDates.map(date => date.toLocaleDateString()));
   
-          if (totalMissingDays === 0) {
-            console.log('No missing dates found. All investment income transactions are up to date.');
-            return;
-          }
+          if (totalMissingDays > 0) {
+            const batch = firebase.firestore().batch();
+            missingDates.forEach(missingDate => {
+              const dateString = missingDate.toLocaleDateString();
+              const uniqueDepositId = `InvestmentIncome_${myuser.uid}_${missingDate.toISOString()}`;
   
-          const batch = firebase.firestore().batch();
-          missingDates.forEach(missingDate => {
-            const dateString = missingDate.toLocaleDateString();
-            const uniqueDepositId = `InvestmentIncome_${myuser.uid}_${missingDate.toISOString()}`;
+              const existingTransaction = transactions.find(transaction => transaction.id === uniqueDepositId);
   
-            const existingTransaction = transactions.find(transaction => transaction.id === uniqueDepositId);
+              if (!existingTransaction) {
+                const depositData = {
+                  id: uniqueDepositId,
+                  amount: percentageAmount.toFixed(2),
+                  date: missingDate.toISOString(),
+                  method: 'Deposit',
+                  title: `Investment Income of ${dateString}`,
+                };
   
-            if (!existingTransaction) {
-              const depositData = {
-                id: uniqueDepositId,
-                amount: percentageAmount.toFixed(2),
-                date: missingDate.toISOString(),
-                method: 'Deposit',
-                title: `Investment Income of ${dateString}`,
-              };
-  
-              batch.update(userRef, {
-                Transaction: firebase.firestore.FieldValue.arrayUnion(depositData),
-                lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-              });
-            }
-          });
-  
-          await batch.commit();
-          console.log(`Missing transactions updated for ${missingDates.length} days.`);
-        } else {
-          const currentDateTime = new Date().toISOString();
-          const uniqueDepositId = `InvestmentIncome_${myuser.uid}_${currentDateTime}`;
-  
-          const existingDeposits = transactions.filter(
-            transaction => transaction.title === `Investment Income of ${new Date().toLocaleDateString()}`
-          );
-  
-          if (existingDeposits.length === 0) {
-            const depositData = {
-              id: uniqueDepositId,
-              amount: percentageAmount.toFixed(2),
-              date: currentDateTime,
-              method: 'Deposit',
-              title: `Investment Income of ${new Date().toLocaleDateString()}`,
-            };
-  
-            await userRef.update({
-              Transaction: firebase.firestore.FieldValue.arrayUnion(depositData),
-              lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+                batch.update(userRef, {
+                  Transaction: firebase.firestore.FieldValue.arrayUnion(depositData),
+                  lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+                });
+              }
             });
   
-            console.log(`Transaction updated for user: ${myuser.uid} at ${new Date().toLocaleTimeString()}`);
+            await batch.commit();
+            console.log(`Missing transactions updated for ${missingDates.length} days.`);
           } else {
-            console.log(`Deposit already exists for today.`);
+            console.log('No missing dates found. All investment income transactions are up to date.');
           }
-          
-          console.log("Multiple transactions found, skipping missing date check.");
+        } else {
+          console.log("No investment income transactions found. Initial deposit will be created for today.");
+  
+          const currentDateTime = new Date().toISOString();
+          const uniqueDepositId = `InvestmentIncome_${myuser.uid}_${currentDateTime}`;
+          const depositData = {
+            id: uniqueDepositId,
+            amount: percentageAmount.toFixed(2),
+            date: currentDateTime,
+            method: 'Deposit',
+            title: `Investment Income of ${new Date().toLocaleDateString()}`,
+          };
+  
+          await userRef.update({
+            Transaction: firebase.firestore.FieldValue.arrayUnion(depositData),
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+  
+          console.log(`Initial transaction created for user: ${myuser.uid} on ${new Date().toLocaleDateString()}`);
         }
       } else {
-        console.log("No eligible 'Deposit' transactions found or gainbot length is zero. Skipping update.");
+        console.log("No eligible 'Deposit' transactions found. Skipping update.");
       }
     } catch (error) {
       console.error('Error updating missing transactions: ', error);
     }
   };
+  
   
   
   //directincome
@@ -266,7 +269,7 @@ function App() {
           const usersList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
           setUsersData(usersList);
           calculateDistributeLevelIncome(usersList);
-          calculatedistributeDirectIncome(usersList); // Call to calculate income whenever users data changes
+          calculatedistributeDirectIncome(usersList); 
         });
   
         return () => {
@@ -281,6 +284,8 @@ function App() {
   
     return () => unsubscribeAuth();
   }, []);
+
+  console.log("userdata transaction",userData)
   
   const calculatedistributeDirectIncome = async (usersList) => {
     if (!myuser || !userData) return; // Ensure user data is available
@@ -291,12 +296,13 @@ function App() {
       const referralIds = user.referralId ? user.referralId.split(',') : [];
       return referralIds[0] === userTokenId;
     });
+    // console.log("level1users",level1Users)
   
     const level2Users = usersList.filter((user) => {
       const referralIds = user.referralId ? user.referralId.split(',') : [];
       return referralIds[1] === userTokenId;
     });
-  
+    // console.log("level2users",level2Users)
     let totalIncome = 0;
   
     // Update transactions for level1 and level2 users
@@ -313,38 +319,39 @@ function App() {
     try {
       const currentDateTime = new Date().toISOString();
       const transactions = user.Transaction;
-
       if (!transactions || transactions.length === 0) {
         console.log(`No transactions found for user: ${user.name}`);
         return 0;
       }
-
+  
       const filteredTransactions = transactions.filter(
         (transaction) => transaction.title === "Deposit for gainbot"
       );
-
+  
       if (filteredTransactions.length === 0) {
         console.log(`No relevant transactions found for user: ${user.name}`);
         return 0;
       }
-
+  
       let totalIncome = 0;
-
+  
       for (let transaction of filteredTransactions) {
         const transactionAmount = parseFloat(transaction.amount || 0);
         const incomeFromTransaction = transactionAmount * percentage;
         totalIncome += incomeFromTransaction;
-
+  
         const mybalance = parseFloat(user.totalbalance) + incomeFromTransaction;
-
-        const uniqueDepositId = `DirectIncome_${user.id}_${transaction.title}_${transaction.date}`;
-
+  
+        // Make `uniqueDepositId` specific to each transaction
+        const uniqueDepositId = `DirectIncome_${user.id}_${transaction.title}_${transaction.id}`;
+  
+        // Check for existing deposits with the specific uniqueDepositId
         const existingDeposits = await firebase.firestore().collection('users')
           .doc(myuser.uid)
           .get()
           .then(doc => doc.data().Transaction || [])
           .then(transactions => transactions.filter(deposit => deposit.id === uniqueDepositId));
-
+  
         if (existingDeposits.length === 0) {
           const depositData = {
             id: uniqueDepositId,
@@ -355,24 +362,25 @@ function App() {
             title: `Direct Income from ${user.name} ${user.lname}`,
             totalbalance: mybalance,
           };
-
+  
           await firebase.firestore().collection('users').doc(myuser.uid).update({
             Transaction: firebase.firestore.FieldValue.arrayUnion(depositData),
             totalbalance: firebase.firestore.FieldValue.increment(incomeFromTransaction),
           });
-
+  
           console.log(`Transaction updated for user: ${user.name}, Income from ${transaction.title}: + ₹${incomeFromTransaction}`);
         } else {
           console.log(`Deposit already exists for user: ${user.name} for transaction: ${transaction.title}`);
         }
       }
-
+  
       return totalIncome;
     } catch (error) {
       console.error('Error updating transaction: ', error);
       return 0;
     }
   };
+  
   
   //level income
 
@@ -528,6 +536,7 @@ function App() {
         <Route path='/contact' element={<Contact />} />
         <Route path='/Profile' element={<Profile />} />
         <Route path='/Admin/Dashboard' element={<Dashboard />} />
+        <Route path='/forgotpassword' element={<ForgotPassword />} />
       </Routes>
     </BrowserRouter>
   );

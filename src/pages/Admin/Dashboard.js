@@ -1,34 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { firebase } from '../../Firebase/config';
-import { BeatLoader } from 'react-spinners';
-import { 
-  FaTachometerAlt, 
-  FaUser, 
-  FaWallet, 
-  FaUsers, 
-  FaChartLine, 
-  FaLifeRing, 
-  FaUserCircle, 
-  FaBars, 
-  FaTimes ,
-  FaSignOutAlt
-} from 'react-icons/fa';
+import { FaTachometerAlt, FaUser, FaUserCircle, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
 import 'tailwindcss/tailwind.css';
 import { useNavigate } from 'react-router-dom';
 import Dashboard from '../../component/Admin/Dashboard';
 import PaymentDetails from '../../component/Admin/PaymentDetails';
 import Transaction from '../../component/Admin/Transaction';
+import WithdrawTransaction from '../../component/Admin/WithdrawTransaction'; // Import the new component
+
 const Profile = () => {
   const navigate = useNavigate(); 
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar visibility
 
-
   const handleLogout = async () => {
     try {
       await firebase.auth().signOut();
-      navigate('/')
-      // Redirect to login or home page after logout if needed
+      navigate('/');
     } catch (error) {
       console.error('Error logging out: ', error);
     }
@@ -38,12 +26,13 @@ const Profile = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'Dashboard':
-        return <Dashboard  />;
+        return <Dashboard />;
       case 'Transaction':
         return <Transaction />;
+      case 'WithdrawTransaction': // Add case for Withdraw Transaction
+        return <WithdrawTransaction />;
       case 'PaymentDetails':
         return <PaymentDetails />;
-    
       default:
         return <div>Dashboard Content</div>;
     }
@@ -67,6 +56,7 @@ const Profile = () => {
           {[
             { name: 'Dashboard', icon: <FaTachometerAlt /> },
             { name: 'Transaction', icon: <FaUser /> },
+            { name: 'WithdrawTransaction', icon: <FaUserCircle /> }, // New Withdraw Transaction tab
             { name: 'PaymentDetails', icon: <FaUserCircle /> },
             { name: 'Logout', icon: <FaSignOutAlt /> } // Add logout option
           ].map((tab, index) => (
@@ -78,6 +68,7 @@ const Profile = () => {
                   handleLogout(); // Handle logout
                 } else {
                   setActiveTab(tab.name);
+                  setIsSidebarOpen(false); // Close the sidebar on tab click
                 }
               }}
             >

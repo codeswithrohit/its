@@ -191,8 +191,8 @@ const Directincome = () => {
   });
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
-      <h1 className="text-4xl font-bold text-center mb-10 text-gray-800">Direct Income</h1>
+    <div className="p-8  min-h-screen">
+      <h1 className="text-4xl font-bold text-center mb-10 text-white">Direct Income</h1>
 
       {/* Level 1 Users Table */}
       <div className="overflow-x-auto">
@@ -209,7 +209,7 @@ const Directincome = () => {
             {level1Users.length > 0 ? (
               level1Users.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-100">
-                  <td className="py-3 px-4 border-b">{user.name}</td>
+                  <td className="py-3 px-4 border-b">{user.name} {user.lname}</td>
                   <td className="py-3 px-4 border-b">{user.number}</td>
                   <td className="py-3 px-4 border-b">{user.email}</td>
                   <td className="py-3 px-4 border-b text-center">
