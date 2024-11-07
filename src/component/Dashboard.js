@@ -34,7 +34,7 @@ const Dashboard = ({ userData, usersData }) => {
     .filter(tx => tx.title === "Deposit for gainbot" && tx.Status === "Paid")
     .reduce((total, tx) => total + parseFloat(tx.amount || 0), 0);
   const myProfit = transactions
-    .filter(tx => tx.title.startsWith("Investment Income"))
+    .filter(tx => tx.title.startsWith("Trade Income"))
     .reduce((total, tx) => total + parseFloat(tx.amount || 0), 0);
   
   const walletBalance = transactions

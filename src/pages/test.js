@@ -25,96 +25,48 @@ function App() {
   const [lastUpdated, setLastUpdated] = useState(null);
   const [myuser, setMyuser] = useState(null);
   const [hasUpdatedToday, setHasUpdatedToday] = useState(false); // Track if update has been made today
+  const [distributed, setDistributed] = useState(false);  // Track distribution status
   const isDistributedRef = useRef(false);  // Ref to track if distribution has occurred
-
-  useEffect(() => {
-    const unsubscribeAuth = firebase.auth().onAuthStateChanged(async (user) => {
-      if (user) {
-        setMyuser(user);
-        const userRef = firebase.firestore().collection('users').doc(user.uid);
-
-        // Listen for changes in the user's data
-        const unsubscribeUserData = userRef.onSnapshot((doc) => {
-          if (doc.exists) {
-            setUserData(doc.data());
-            const transactions = doc.data().Transaction || [];
-            // console.log("Transaction", transactions);
-            const depositTransactions = transactions
-              .filter(
-                (transaction) =>
-                  transaction.title === "Deposit for gainbot" && transaction.Status === "Paid"
-              )
-              .map((transaction) => parseFloat(transaction.amount));
-
-            if (depositTransactions.length > 0 && usersData.length > 0 && !isDistributedRef.current) {
-              calculatedistributeDirectIncome(usersData);
-              calculateDistributeLevelIncome(usersData)
-              isDistributedRef.current = true;  // Ensure it's triggered only once
-            }
-          } else {
-            console.log('No user data found');
-          }
-        });
-
-        // Listen for changes in the users collection
-        const usersRef = firebase.firestore().collection('users');
-        const unsubscribeUsersData = usersRef.onSnapshot((snapshot) => {
-          const usersList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-          setUsersData(usersList);
-        });
-
-        return () => {
-          unsubscribeUserData();
-          unsubscribeUsersData();
-        };
-      } else {
-        console.log('No user signed in');
-        setLoading(false);
-      }
-    });
-
-    return () => unsubscribeAuth();
-  }, [usersData]);
 
 
   useEffect(() => {
     const fetchUserData = async () => {
       setLoading(true);
-      const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
+      const unsubscribeAuth = firebase.auth().onAuthStateChanged(async (user) => {
         if (user) {
           setMyuser(user);
           try {
-            const userRef = firebase.firestore().collection("users").doc(user.uid);
-
-            // Set up real-time listener
-            userRef.onSnapshot((doc) => {
+            const userRef = firebase.firestore().collection('users').doc(user.uid);
+  
+            // Listen for changes in the user's data
+            const unsubscribeUserData = userRef.onSnapshot((doc) => {
               if (doc.exists) {
                 const data = doc.data();
                 if (JSON.stringify(userData) !== JSON.stringify(data)) {
-                  // console.log("Data updated:", data);
-                  
+                  console.log("Data updated:", data);
                   setUserData(data);
                   setLoading(false);
+  
                   const transactions = data.Transaction || [];
                   const depositTransactions = transactions
-                  .filter((transaction) => 
-                      transaction.title === "Deposit for gainbot" && transaction.Status === "Paid"
-                  )
-                  .map((transaction) => parseFloat(transaction.amount));
-
+                    .filter((transaction) => 
+                        transaction.title === "Deposit for gainbot" && transaction.Status === "Paid"
+                    )
+                    .map((transaction) => parseFloat(transaction.amount));
+  
                   const totalAmount = depositTransactions.reduce((acc, curr) => acc + curr, 0);
                   const deductionCharge = totalAmount * 0.15;
                   const adjustedTotal = totalAmount - deductionCharge;
                   const percentage = adjustedTotal * 0.0056;
-
+  
                   setPercentageAmount(percentage);
-
+  
                   if (data.lastUpdated) {
                     setLastUpdated(data.lastUpdated.toDate());
-                    // console.log(`Last update time: ${data.lastUpdated.toDate()}`);
+                    console.log(`Last update time: ${data.lastUpdated.toDate()}`);
                   }
                 } else {
-                  // console.log("No data update, forcing income distribution.");
+                  console.log("No data update, forcing income distribution.");
                   // Call distributeInvestmentIncome when there are no data updates
                   distributeInvestmentIncome();
                 }
@@ -122,20 +74,41 @@ function App() {
                 console.log("No user data found");
               }
             });
+  
+            // Listen for changes in the users collection
+            const usersRef = firebase.firestore().collection('users');
+            const unsubscribeUsersData = usersRef.onSnapshot((snapshot) => {
+              const usersList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+              setUsersData(usersList);
+  
+              // Call the income distribution functions when the usersData updates
+              if (usersList.length > 0 && !isDistributedRef.current) {
+                console.log("Distributing income based on user data...");
+                calculatedistributeDirectIncome(usersList); // Direct income distribution
+                calculateDistributeLevelIncome(usersList); // Level income distribution
+                isDistributedRef.current = true;  // Ensure it triggers only once
+              }
+            });
+  
+            return () => {
+              unsubscribeUserData();
+              unsubscribeUsersData();
+            };
+  
           } catch (error) {
             console.error("Error fetching user data: ", error);
           }
         } else {
           console.log("No user signed in");
+          setLoading(false);
         }
-        setLoading(false);
       });
-
-      return () => unsubscribe();
+  
+      return () => unsubscribeAuth();
     };
-
+  
     fetchUserData();
-  }, [myuser, userData]);
+  }, [myuser, userData, usersData]);
   
 
 

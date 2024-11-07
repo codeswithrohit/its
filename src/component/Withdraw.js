@@ -168,7 +168,7 @@ const Withdraw = () => {
   if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
 
   return (
-    <div className="flex flex-col items-center p-6 space-y-6 bg-gray-50 min-h-screen">
+    <div className="flex flex-col items-center p-6 space-y-6  min-h-screen">
       <ToastContainer />
 
       <div className="w-full max-w-lg p-8 bg-white shadow-lg rounded-lg border border-gray-200">
