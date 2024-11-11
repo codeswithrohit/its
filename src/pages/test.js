@@ -1,465 +1,185 @@
-import logo from './logo.svg';
-import './App.css';
-import './css/main.css';
-import './css/bootstrap.min.css';
-import Home from './pages/home/Home';
-import { Route, Routes, BrowserRouter } from 'react-router-dom';
-import Login from './pages/login/Login';
-import Register from './pages/register/Register';
-import Faq from './pages/faq/Faq';
-import Trade from './pages/Trade/Trade';
-import Features from './pages/Features/Features';
-import Contact from './pages/Contact/Contact';
-import Dashboard from './pages/Admin/Dashboard';
-import Profile from './pages/Profile';
-import { useState, useEffect, useRef } from "react";
-import { firebase } from '../src/Firebase/config';
-import Article from './pages/article/Article';
-import ForgotPassword from './pages/Forgotpassword/forgotpassword';
-
-function App() {
-  const [loading, setLoading] = useState(true);
-  const [usersData, setUsersData] = useState([]);
-  const [userData, setUserData] = useState(null);
-  const [percentageAmount, setPercentageAmount] = useState(0);
-  const [lastUpdated, setLastUpdated] = useState(null);
-  const [myuser, setMyuser] = useState(null);
-  const [hasUpdatedToday, setHasUpdatedToday] = useState(false); // Track if update has been made today
-  const [distributed, setDistributed] = useState(false);  // Track distribution status
-  const isDistributedRef = useRef(false);  // Ref to track if distribution has occurred
-
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      setLoading(true);
-      const unsubscribeAuth = firebase.auth().onAuthStateChanged(async (user) => {
-        if (user) {
-          setMyuser(user);
-          try {
-            const userRef = firebase.firestore().collection('users').doc(user.uid);
-  
-            // Listen for changes in the user's data
-            const unsubscribeUserData = userRef.onSnapshot((doc) => {
-              if (doc.exists) {
-                const data = doc.data();
-                if (JSON.stringify(userData) !== JSON.stringify(data)) {
-                  console.log("Data updated:", data);
-                  setUserData(data);
-                  setLoading(false);
-  
-                  const transactions = data.Transaction || [];
-                  const depositTransactions = transactions
-                    .filter((transaction) => 
-                        transaction.title === "Deposit for gainbot" && transaction.Status === "Paid"
-                    )
-                    .map((transaction) => parseFloat(transaction.amount));
-  
-                  const totalAmount = depositTransactions.reduce((acc, curr) => acc + curr, 0);
-                  const deductionCharge = totalAmount * 0.15;
-                  const adjustedTotal = totalAmount - deductionCharge;
-                  const percentage = adjustedTotal * 0.0056;
-  
-                  setPercentageAmount(percentage);
-  
-                  if (data.lastUpdated) {
-                    setLastUpdated(data.lastUpdated.toDate());
-                    console.log(`Last update time: ${data.lastUpdated.toDate()}`);
-                  }
-                } else {
-                  console.log("No data update, forcing income distribution.");
-                  // Call distributeInvestmentIncome when there are no data updates
-                  distributeInvestmentIncome();
-                }
-              } else {
-                console.log("No user data found");
-              }
-            });
-  
-            // Listen for changes in the users collection
-            const usersRef = firebase.firestore().collection('users');
-            const unsubscribeUsersData = usersRef.onSnapshot((snapshot) => {
-              const usersList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-              setUsersData(usersList);
-  
-              // Call the income distribution functions when the usersData updates
-              if (usersList.length > 0 && !isDistributedRef.current) {
-                console.log("Distributing income based on user data...");
-                calculatedistributeDirectIncome(usersList); // Direct income distribution
-                calculateDistributeLevelIncome(usersList); // Level income distribution
-                isDistributedRef.current = true;  // Ensure it triggers only once
-              }
-            });
-  
-            return () => {
-              unsubscribeUserData();
-              unsubscribeUsersData();
-            };
-  
-          } catch (error) {
-            console.error("Error fetching user data: ", error);
-          }
-        } else {
-          console.log("No user signed in");
-          setLoading(false);
-        }
-      });
-  
-      return () => unsubscribeAuth();
-    };
-  
-    fetchUserData();
-  }, [myuser, userData, usersData]);
-  
-
-
-  useEffect(() => {
-    const checkAndUpdateInvestmentTransaction = async () => {
-      if (!myuser || !lastUpdated) return;
-  
-      const now = new Date();
-      const lastUpdateDate = new Date(lastUpdated);
-  
-      if (now.toDateString() !== lastUpdateDate.toDateString() && !hasUpdatedToday) {
-        await distributeInvestmentIncome(); // Update missing dates
-        setHasUpdatedToday(true); 
-        console.log(`Data updated today at ${now.toLocaleTimeString()}`);
-      } else {
-        console.log("Data was already updated today.");
-      }
-    };
-  
-    checkAndUpdateInvestmentTransaction();
-    const interval = setInterval(() => {
-      checkAndUpdateInvestmentTransaction();
-    }, 60 * 1000);
-  
-    return () => clearInterval(interval);
-  }, [lastUpdated, myuser, hasUpdatedToday]);
-  
-  const distributeInvestmentIncome = async () => {
-    try {
-      const userRef = firebase.firestore().collection('users').doc(myuser.uid);
-      const userDoc = await userRef.get();
-      const transactions = userDoc.data().Transaction || [];
-  
-      // Check if any transaction with title "Deposit" exists
-      const hasDeposit = transactions.some(
-        transaction => transaction.title === "Deposit for gainbot" && transaction.Status === "Paid"
-      );
-  
-      if (hasDeposit) {
-        // Filter and sort investment income transactions by date
-        const investmentIncomeTransactions = transactions
-          .filter(transaction => transaction.title.startsWith("Trade Income"))
-          .map(transaction => new Date(transaction.date))
-          .sort((a, b) => a - b);
-  
-        if (investmentIncomeTransactions.length >= 1) {
-          let firstIncomeDate = investmentIncomeTransactions[0];
-          let lastIncomeDate = investmentIncomeTransactions[investmentIncomeTransactions.length - 1];
-  
-          console.log("First income date:", firstIncomeDate);
-          console.log("Last income date:", lastIncomeDate);
-  
-          const today = new Date();
-          const todayString = today.toLocaleDateString();
-          const existingIncomeToday = transactions.some(
-            transaction => transaction.title === `Trade Income of ${todayString}`
-          );
-  
-          if (!existingIncomeToday) {
-            const uniqueDepositId = `TradeIncome_${myuser.uid}_${today.toISOString()}`;
-            const depositData = {
-              id: uniqueDepositId,
-              amount: percentageAmount.toFixed(2),
-              date: today.toISOString(),
-              method: 'Deposit',
-              title: `Trade Income of ${todayString}`,
-            };
-  
-            await userRef.update({
-              Transaction: firebase.firestore.FieldValue.arrayUnion(depositData),
-              lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-            });
-  
-            console.log(`Transaction updated for user: ${myuser.uid} on ${todayString}`);
-          } else {
-            console.log(`Deposit already exists for today: ${todayString}`);
-          }
-  
-          // Calculate missing dates between first and last income dates
-          const missingDates = [];
-          let currentDate = new Date(firstIncomeDate);
-          currentDate.setDate(currentDate.getDate() + 1);
-  
-          while (currentDate <= lastIncomeDate) {
-            const dateString = currentDate.toLocaleDateString();
-            const existingIncomeForDate = transactions.find(
-              transaction => transaction.title === `Trade Income of ${dateString}`
-            );
-  
-            if (!existingIncomeForDate) {
-              missingDates.push(new Date(currentDate));
-            }
-            currentDate.setDate(currentDate.getDate() + 1);
-          }
-  
-          const totalMissingDays = missingDates.length;
-          console.log(`Missing investment income for ${totalMissingDays} days.`);
-          console.log("Missing dates:", missingDates.map(date => date.toLocaleDateString()));
-  
-          if (totalMissingDays > 0) {
-            const batch = firebase.firestore().batch();
-            missingDates.forEach(missingDate => {
-              const dateString = missingDate.toLocaleDateString();
-              const uniqueDepositId = `TradeIncome_${myuser.uid}_${missingDate.toISOString()}`;
-  
-              const existingTransaction = transactions.find(transaction => transaction.id === uniqueDepositId);
-  
-              if (!existingTransaction) {
-                const depositData = {
-                  id: uniqueDepositId,
-                  amount: percentageAmount.toFixed(2),
-                  date: missingDate.toISOString(),
-                  method: 'Deposit',
-                  title: `Trade Income of ${dateString}`,
-                };
-  
-                batch.update(userRef, {
-                  Transaction: firebase.firestore.FieldValue.arrayUnion(depositData),
-                  lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-                });
-              }
-            });
-  
-            await batch.commit();
-            console.log(`Missing transactions updated for ${missingDates.length} days.`);
-          } else {
-            console.log('No missing dates found. All investment income transactions are up to date.');
-          }
-        } else {
-          console.log("No investment income transactions found. Initial deposit will be created for today.");
-  
-          const currentDateTime = new Date().toISOString();
-          const uniqueDepositId = `TradeIncome_${myuser.uid}_${currentDateTime}`;
-          const depositData = {
-            id: uniqueDepositId,
-            amount: percentageAmount.toFixed(2),
-            date: currentDateTime,
-            method: 'Deposit',
-            title: `Trade Income of ${new Date().toLocaleDateString()}`,
-          };
-  
-          await userRef.update({
-            Transaction: firebase.firestore.FieldValue.arrayUnion(depositData),
-            lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-          });
-  
-          console.log(`Initial transaction created for user: ${myuser.uid} on ${new Date().toLocaleDateString()}`);
-        }
-      } else {
-        console.log("No eligible 'Deposit' transactions found. Skipping update.");
-      }
-    } catch (error) {
-      console.error('Error updating missing transactions: ', error);
-    }
-  };
-
-  const calculatedistributeDirectIncome = async (usersList) => {
-    if (!myuser || !userData) return;
-
-    const userTokenId = userData.tokenId;
-
-    const level1Users = usersList.filter((user) => {
-      const referralIds = user.referralId ? user.referralId.split(',') : [];
-      return referralIds[0] === userTokenId;
-    });
-
-    const level2Users = usersList.filter((user) => {
-      const referralIds = user.referralId ? user.referralId.split(',') : [];
-      return referralIds[1] === userTokenId;
-    });
-
-    let totalIncome = 0;
-
-    for (let level1User of level1Users) {
-      totalIncome += await distributeDirectIncome(level1User, 0.05); // 5% for Level 1
-    }
-
-    for (let level2User of level2Users) {
-      totalIncome += await distributeDirectIncome(level2User, 0.05); // 5% for Level 2
-    }
-  };
-
-  const distributeDirectIncome = async (user, percentage) => {
-    try {
-      const currentDateTime = new Date().toISOString();
-      const transactions = user.Transaction;
-
-      if (!transactions || transactions.length === 0) {
-        console.log(`No transactions found for user: ${user.name}`);
-        return 0;
-      }
-
-      const filteredTransactions = transactions.filter(
-        (transaction) => transaction.title === "Deposit for gainbot"
-      );
-
-      if (filteredTransactions.length === 0) {
-        console.log(`No relevant transactions found for user: ${user.name}`);
-        return 0;
-      }
-
-      let totalIncome = 0;
-
-      for (let transaction of filteredTransactions) {
-        const transactionAmount = parseFloat(transaction.amount || 0);
-        const incomeFromTransaction = transactionAmount * percentage;
-        totalIncome += incomeFromTransaction;
-
-        const title = `Sponsor Income from ${user.tokenId}`;
-        const paymentDate = `${transaction.date}`;
-
-        // Check for existing deposits with the specific title and paymentDate
-        const existingDeposits = await firebase.firestore().collection('users')
-          .doc(myuser.uid)
-          .get()
-          .then(doc => doc.data().Transaction || [])
-          .then(transactions => transactions.filter(deposit =>
-            deposit.title === title ));
-
-        if (existingDeposits.length === 0) {
-          const depositData = {
-            amount: incomeFromTransaction.toFixed(2),
-            date: currentDateTime,
-            paymentdate: paymentDate,
-            method: 'Deposit',
-            title: title,
-          };
-
-          // Add transaction using arrayUnion to avoid duplicate entries
-          await firebase.firestore().collection('users').doc(myuser.uid).update({
-            Transaction: firebase.firestore.FieldValue.arrayUnion(depositData),
-          });
-
-          console.log(`Transaction updated for user: ${user.name}, Income from ${transaction.title}: + ₹${incomeFromTransaction}`);
-        } else {
-          console.log(`Deposit already exists for Direct Income from user: ${user.name} for transaction: ${transaction.title}`);
-        }
-      }
-
-      return totalIncome;
-    } catch (error) {
-      console.error('Error updating transaction: ', error);
-      return 0;
-    }
-  };
-
-  const calculateDistributeLevelIncome = async (usersList) => {
-    if (!myuser || !userData) return; // Ensure user data is available
-
-    const userTokenId = userData.tokenId;
-    const levelPercentages = [0.15, 0.10, 0.05, 0.04, 0.03, 0.02, 0.01, 0.005, 0.005, 0.005, 0.005, 0.005, 0.01, 0.02, 0.03]; // Level 1 to 15 percentages
-
-    let totalIncome = 0;
-
-    // Iterate over levels 1 to 15
-    for (let level = 1; level <= 15; level++) {
-      const levelUsers = usersList.filter((user) => {
-        const referralIds = user.referralId ? user.referralId.split(',') : [];
-        return referralIds[level - 1] === userTokenId; // level - 1 to match array index
-      });
-
-      for (let levelUser of levelUsers) {
-        const depositData = await distributeLevelIncome(levelUser, levelPercentages[level - 1]); // Get percentage for the current level
-        totalIncome += depositData; // Sum up the total income
-      }
-    }
-
-    
-  };
-
-  const distributeLevelIncome = async (user, percentage) => {
-    try {
-      const currentDateTime = new Date().toISOString();
-      const transactions = user.Transaction;
-
-      if (!transactions || transactions.length === 0) {
-        console.log(`No transactions found for user: ${user.name}`);
-        return 0;
-      }
-
-      const filteredTransactions = transactions.filter(
-        (transaction) => transaction.title === "Deposit for gainbot"
-      );
-
-      if (filteredTransactions.length === 0) {
-        console.log(`No relevant transactions found for user: ${user.name}`);
-        return 0;
-      }
-
-      let totalIncome = 0;
-
-      for (let transaction of filteredTransactions) {
-        const transactionAmount = parseFloat(transaction.amount || 0);
-        const incomeFromTransaction = transactionAmount * percentage;
-        totalIncome += incomeFromTransaction;
-
-      
-
-        const title = `Affiliate Income from ${user.tokenId}`;
-
-        const existingDeposits = await firebase.firestore().collection('users')
-        .doc(myuser.uid)
-        .get()
-        .then(doc => doc.data().Transaction || [])
-        .then(transactions => transactions.filter(deposit =>
-          deposit.title === title ));
-
-        if (existingDeposits.length === 0) {
-          const depositData = {
-            amount: incomeFromTransaction.toFixed(2),
-            date: currentDateTime,
-            paymentdate: `${transaction.date}`,
-            method: 'Deposit',
-            title: title,
-          };
-
-          await firebase.firestore().collection('users').doc(myuser.uid).update({
-            Transaction: firebase.firestore.FieldValue.arrayUnion(depositData),
-          });
-
-          console.log(`Transaction updated  level income for user: ${user.name} ${user.lname}, Income from ${transaction.title}: + ₹${incomeFromTransaction}`);
-        } else {
-          console.log(`Deposit already exists for level Income from user: ${user.name} for transaction: ${transaction.title}`);
-        }
-      }
-
-      return totalIncome;
-    } catch (error) {
-      console.error('Error updating transaction: ', error);
-      return 0;
-    }
-  };
-
-
+import React from 'react'
+import Header from '../../component/Header/Header'
+import Navbar from '../../component/navbar/Navbar'
+const Article = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/register' element={<Register />} />
-        <Route path='/faq' element={<Faq />} />
-        <Route path='/article' element={<Article />} />
-        <Route path='/trade' element={<Trade />} />
-        <Route path='/features' element={<Features />} />
-        <Route path='/contact' element={<Contact />} />
-        <Route path='/Profile' element={<Profile />} />
-        <Route path='/Admin/Dashboard' element={<Dashboard />} />
-        <Route path='/forgotpassword' element={<ForgotPassword />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
+    <div>
+    <Header/>
+    <Navbar/>
+    <div className="max-w-4xl mx-auto p-6">
+      {/* Article Title */}
+      <h1 className="text-3xl font-bold mb-4">Article of Gainbot</h1>
 
-export default App;
+      {/* Growth Artificial Intelligence Navigation Bot */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Growth Artificial Intelligence Navigation Bot</h2>
+        <p className="text-lg">
+          Welcome to Gainbot! Start here to succeed everywhere.
+        </p>
+      </section>
+
+      {/* About Us Section */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">About Us</h2>
+        <p className="text-lg">
+          Gainbot is a cutting-edge technology company revolutionizing industries through artificial intelligence, automation, and robotics. Our diverse team of experts collaborates to develop innovative solutions, empowering individuals and organizations to achieve more.
+        </p>
+      </section>
+
+      {/* Gainbot Founder Details */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Gainbot Founder Details</h2>
+        <p className="text-lg">
+          Mr. Matthew Rojwak stands out as a visionary leader in the tech and blockchain sector. His journey from a curious student to the founder of Bloq and a respected investor exemplifies the impact of passion and perseverance in the world of entrepreneurship.
+        </p>
+      </section>
+
+      {/* Early Life and Education */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Early Life and Education</h2>
+        <p className="text-lg">
+          Matthew Rojwak was born in the United States and raised in a family that valued innovation and entrepreneurship. His passion led him to pursue a degree in Business Administration with a focus on Information Technology, laying the groundwork for his future endeavors.
+        </p>
+      </section>
+
+      {/* Journey of Gainbot */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Journey of Gainbot</h2>
+        <p className="text-lg">
+          Matthew Rojwak started building Gainbot in 2020, but it fully came into functioning in 2022 and launched in August 2023. Since then, the community has rapidly grown with millions of users.
+        </p>
+      </section>
+
+      {/* Mission and Vision */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Mission</h2>
+        <p className="text-lg">
+          To harness the power of AI and automation to drive efficiency, productivity, and growth, while fostering a culture of innovation, excellence, and integrity.
+        </p>
+        <h2 className="text-2xl font-semibold mb-2">Vision</h2>
+        <ul className="list-disc pl-6">
+          <li>Pioneering innovation</li>
+          <li>Exceptional performance</li>
+          <li>Strategic partnerships</li>
+          <li>Ethical practices</li>
+        </ul>
+      </section>
+
+      {/* Trading Benefits */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Why Trading with Gainbot is Important</h2>
+        <h3 className="text-xl font-semibold mb-2">For Traders</h3>
+        <ul className="list-disc pl-6">
+          <li>Simplified Trading</li>
+          <li>Increased Efficiency</li>
+          <li>Improved Accuracy</li>
+          <li>Enhanced Risk Management</li>
+          <li>Access to Expert Insights</li>
+        </ul>
+        <h3 className="text-xl font-semibold mb-2">For Investors</h3>
+        <ul className="list-disc pl-6">
+          <li>Diversified Portfolio</li>
+          <li>Passive Income</li>
+          <li>Reduced Risk</li>
+          <li>Expert Guidance</li>
+          <li>Transparency</li>
+        </ul>
+        <h3 className="text-xl font-semibold mb-2">For Financial Freedom</h3>
+        <ul className="list-disc pl-6">
+          <li>Achieve Financial Goals</li>
+          <li>Wealth Creation</li>
+          <li>Financial Security</li>
+          <li>Peace of Mind</li>
+          <li>Freedom to Focus</li>
+        </ul>
+      </section>
+
+      {/* Why Choose Gainbot */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Why Choose Gainbot</h2>
+        <ul className="list-disc pl-6">
+          <li>Cutting-Edge Technology</li>
+          <li>Expert Team</li>
+          <li>Proven Track Record</li>
+          <li>Customer Support</li>
+          <li>Security and Compliance</li>
+        </ul>
+      </section>
+
+      {/* Step-by-step Guide */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Step-by-Step Guide on How to Earn with Gainbot</h2>
+        <h3 className="text-xl font-semibold mb-2">Getting Started</h3>
+        <ol className="list-decimal pl-6">
+          <li>Sign up: Create an account on Gainbot's platform.</li>
+          <li>Deposit funds: Fund your wallet with supported cryptocurrency or fiat currency.</li>
+          <li>Verify wallet: Complete KYC verification.</li>
+        </ol>
+        <h3 className="text-xl font-semibold mb-2">Trading with Gainbot</h3>
+        <ol className="list-decimal pl-6">
+          <li>Choose a trading bot: Select from various AI-powered trading bots.</li>
+          <li>Set trading parameters: Configure bot settings, risk management, and strategy.</li>
+          <li>Start trading: Activate the bot and let it trade automatically.</li>
+        </ol>
+      </section>
+
+      {/* Types of Income in Gainbot */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Types of Income in Gainbot.AI</h2>
+        <ul className="list-disc pl-6">
+          <li><strong>Sign-up bonus:</strong> Gainbot offers a free $1 USDT wealth for a trial of its features.</li>
+          <li><strong>Trade profit:</strong> Earn 15-20% on trade income with various market strategies.</li>
+          <li><strong>Referral program:</strong> Earn 5% for referring new users.</li>
+          <li><strong>Affiliate program:</strong> Earn rewards by promoting Gainbot.</li>
+          <li><strong>Re-top-up & Trade Bonus:</strong> Reinvest and earn a 5% bonus.</li>
+        </ul>
+      </section>
+
+      {/* Affiliate Income Criteria */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Affiliate Income Criteria</h2>
+        <p className="text-lg">
+          For each affiliate level, you must qualify by meeting certain criteria. Gainbot provides 15 levels of income based on direct referrals and investments.
+        </p>
+      </section>
+
+      {/* Straddle Strategy Overview */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Straddle Strategy Overview</h2>
+        <p className="text-lg">
+          A straddle involves buying both a call and a put option with the same strike price and expiration date, betting on significant price movement in either direction.
+        </p>
+        <h3 className="text-xl font-semibold mb-2">Steps to Implement a Straddle</h3>
+        <ul className="list-decimal pl-6">
+          <li>Choose the underlying asset.</li>
+          <li>Select strike price (at-the-money).</li>
+          <li>Determine expiration date.</li>
+          <li>Buy both options simultaneously.</li>
+        </ul>
+      </section>
+
+      {/* Withdrawal Process */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Withdrawal Process</h2>
+        <ol className="list-decimal pl-6">
+          <li>Request withdrawal: Withdraw earnings to your wallet.</li>
+          <li>Verification: Confirm withdrawal request.</li>
+          <li>Processing: Gainbot processes withdrawal within 24 - 72 hours.</li>
+        </ol>
+      </section>
+
+      {/* Fees */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Fees</h2>
+        <ul className="list-disc pl-6">
+          <li>Trading fees: 0.1% to 0.2% on each transaction.</li>
+          <li>Referral commission: 5% commission on the trading of referred users.</li>
+          <li>Affiliate program: Varies depending on your level.</li>
+        </ul>
+      </section>
+    </div>
+    </div>
+  );
+};
+
+export default Article;

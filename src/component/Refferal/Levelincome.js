@@ -183,9 +183,9 @@ const Directincome = () => {
               <thead>
                 <tr className="bg-gray-200 text-gray-600">
                   <th className="py-3 px-4 border-b">Name</th>
-                  <th className="py-3 px-4 border-b">Number</th>
-                  <th className="py-3 px-4 border-b">Email</th>
-                  <th className="py-3 px-4 border-b">Actions</th>
+                  <th className="py-3 px-4 border-b">Sponsor Id</th>
+                  {/* <th className="py-3 px-4 border-b">Email</th>
+                  <th className="py-3 px-4 border-b">Actions</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -193,8 +193,8 @@ const Directincome = () => {
                   levelUsers.map((user) => (
                     <tr key={user.id} className="hover:bg-gray-100">
                       <td className="py-3 px-4 border-b">{user.name} {user.lname}</td>
-                      <td className="py-3 px-4 border-b">{user.number}</td>
-                      <td className="py-3 px-4 border-b">{user.email}</td>
+                      <td className="py-3 px-4 border-b">{user.tokenId}</td>
+                      {/* <td className="py-3 px-4 border-b">{user.email}</td>
                       <td className="py-3 px-4 border-b text-center">
                         <button
                           onClick={() => openModal(user)}
@@ -202,7 +202,7 @@ const Directincome = () => {
                           <FaEye className="mr-1" />
                           View Transactions
                         </button>
-                      </td>
+                      </td> */}
                     </tr>
                   ))
                 ) : (

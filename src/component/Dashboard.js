@@ -75,10 +75,21 @@ const Dashboard = ({ userData, usersData }) => {
     setPopupData(teamUsers);
     setShowPopup(true);
   };
+  console.log("userdata",userData)
 
   return (
     <div className="min-h-screen px-4 py-8">
-      <h1 className="text-4xl font-bold text-gray-900 text-center mb-8">Welcome, {userData?.name}</h1>
+    <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
+  <h1 className="md:text-4xl font-bold text-white text-center text-xl mb-8">Welcome To {userData?.name}</h1>
+  <h1 className="md:text-4xl font-bold text-white text-center text-xl  mb-8">
+  {userData?.createdAt ? new Date(userData.createdAt.seconds * 1000).toLocaleString() : "Loading..."}
+</h1>
+
+  {/* <h1 className="text-4xl font-bold text-white text-center mb-8">Welcome To {userData?.name}</h1>
+  <h1 className="text-4xl font-bold text-white text-center mb-8">Welcome To {userData?.name}</h1>
+  <h1 className="text-4xl font-bold text-white text-center mb-8">Welcome To {userData?.name}</h1> */}
+</div>
+
 
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8 max-w-xl mx-auto">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4 text-center">Your Referral Code</h2>
@@ -105,7 +116,7 @@ const Dashboard = ({ userData, usersData }) => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 w-full mx-auto">
         {[{
           title: 'My Investment',
           value: `$${myInvestment.toFixed(2)}`,
@@ -153,12 +164,12 @@ const Dashboard = ({ userData, usersData }) => {
         }].map((card, index) => (
           <div key={index} className={`${card.bg} ${card.borderColor} border-b-4 rounded-lg shadow-lg p-6`}>
             <div className="flex items-center">
-              <div className={`rounded-full p-4 ${card.iconColor} shadow-lg text-white`}>
+              <div className={`rounded-full p-2 ${card.iconColor} shadow-lg text-white`}>
                 {card.icon}
               </div>
               <div className="flex-1 text-right ml-4">
-                <h2 className="font-semibold text-gray-700">{card.title}</h2>
-                <p className="text-3xl font-bold text-gray-900">{card.value}</p>
+                <h2 className="font-semibold text-gray-700 md:text-xl text-sm">{card.title}</h2>
+                <p className="text-3xl font-bold text-gray-900 md:text-2xl text-sm">{card.value}</p>
                 {card.onClick && (
                   <button onClick={card.onClick} className="text-blue-600 hover:underline mt-2">View</button>
                 )}
@@ -177,7 +188,7 @@ const Dashboard = ({ userData, usersData }) => {
         {popupData.map((user, index) => (
           <li key={index} className="border-b pb-2">
             <p>Name: {user.name} {user.lname}</p>
-            <p>Token ID: {user.tokenId}</p>
+            <p>Sponsor ID: {user.tokenId}</p>
           </li>
         ))}
       </ul>

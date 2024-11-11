@@ -386,7 +386,7 @@ function App() {
     if (!myuser || !userData) return; // Ensure user data is available
 
     const userTokenId = userData.tokenId;
-    const levelPercentages = [0.15, 0.10, 0.05, 0.04, 0.03, 0.02, 0.01, 0.005, 0.005, 0.005, 0.005, 0.005, 0.01, 0.02, 0.03]; // Level 1 to 15 percentages
+    const levelPercentages = [0.005, 0.0033, 0.0016, 0.0013, 0.001, 0.00066, 0.00033, 0.00016, 0.00016, 0.00016, 0.00016, 0.00016, 0.00033, 0.00066, 0.001]; // Level 1 to 15 percentages
 
     let totalIncome = 0;
 
@@ -410,64 +410,127 @@ function App() {
     try {
       const currentDateTime = new Date().toISOString();
       const transactions = user.Transaction;
-
+  
       if (!transactions || transactions.length === 0) {
         console.log(`No transactions found for user: ${user.name}`);
         return 0;
       }
-
+  
+      // Filter for transactions with titles that start with "Trade Income"
       const filteredTransactions = transactions.filter(
-        (transaction) => transaction.title === "Deposit for gainbot"
+        (transaction) => transaction.title.startsWith("Trade Income")
       );
-
+  
       if (filteredTransactions.length === 0) {
         console.log(`No relevant transactions found for user: ${user.name}`);
         return 0;
       }
-
+  
+      console.log("transaction level wise", filteredTransactions);
       let totalIncome = 0;
-
+  
+      // Sort transactions by date
+      const sortedTransactions = filteredTransactions
+        .map((transaction) => new Date(transaction.date))
+        .sort((a, b) => a - b);
+  
+      const firstIncomeDate = sortedTransactions[0];
+      const lastIncomeDate = sortedTransactions[sortedTransactions.length - 1];
+  
+      console.log("First income date:", firstIncomeDate);
+      console.log("Last income date:", lastIncomeDate);
+  
+      // Detect and log missing dates
+      const missingDates = [];
+      let currentDate = new Date(firstIncomeDate);
+      currentDate.setDate(currentDate.getDate() + 1);
+  
+      while (currentDate <= lastIncomeDate) {
+        const dateString = currentDate.toLocaleDateString();
+        const existingIncomeForDate = transactions.find(
+          transaction => transaction.title === `Affiliate Income from ${user.tokenId} of ${dateString}`
+        );
+  
+        if (!existingIncomeForDate) {
+          missingDates.push(new Date(currentDate));
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+  
+      const totalMissingDays = missingDates.length;
+      console.log(`Missing level income for ${totalMissingDays} days.`);
+      console.log("Missing dates:", missingDates.map(date => date.toLocaleDateString()));
+  
+      if (totalMissingDays > 0) {
+        const batch = firebase.firestore().batch();
+  
+        missingDates.forEach(missingDate => {
+          const dateString = missingDate.toLocaleDateString();
+          const uniqueDepositId = `AffiliateIncome_${user.tokenId}_${missingDate.toISOString()}`;
+  
+          const depositData = {
+            id: uniqueDepositId,
+            amount: (percentage * 100).toFixed(2),  // Adjust the calculation as needed
+            date: missingDate.toISOString(),
+            method: 'Deposit',
+            title: `Affiliate Income from ${user.tokenId} of ${dateString}`,
+          };
+  
+          batch.update(firebase.firestore().collection('users').doc(myuser.uid), {
+            Transaction: firebase.firestore.FieldValue.arrayUnion(depositData),
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+        });
+  
+        await batch.commit();
+        console.log(`Missing level income transactions updated for ${totalMissingDays} days.`);
+      } else {
+        console.log('All level income transactions are up to date.');
+      }
+  
+      // Process daily transactions
       for (let transaction of filteredTransactions) {
         const transactionAmount = parseFloat(transaction.amount || 0);
         const incomeFromTransaction = transactionAmount * percentage;
         totalIncome += incomeFromTransaction;
-
-      
-
-        const title = `Affiliate Income from ${user.tokenId}`;
-
+  
+        const today = new Date();
+        const todayString = today.toLocaleDateString();
+        const title = `Affiliate Income from ${user.tokenId} of ${todayString}`;
+  
         const existingDeposits = await firebase.firestore().collection('users')
-        .doc(myuser.uid)
-        .get()
-        .then(doc => doc.data().Transaction || [])
-        .then(transactions => transactions.filter(deposit =>
-          deposit.title === title ));
-
+          .doc(myuser.uid)
+          .get()
+          .then(doc => doc.data().Transaction || [])
+          .then(transactions => transactions.filter(deposit => deposit.title === title));
+  
         if (existingDeposits.length === 0) {
           const depositData = {
-            amount: incomeFromTransaction.toFixed(2),
+            amount: incomeFromTransaction.toFixed(7),
             date: currentDateTime,
-            paymentdate: `${transaction.date}`,
+            paymentdate: transaction.date,
             method: 'Deposit',
             title: title,
           };
-
+  
           await firebase.firestore().collection('users').doc(myuser.uid).update({
             Transaction: firebase.firestore.FieldValue.arrayUnion(depositData),
           });
-
-          console.log(`Transaction updated  level income for user: ${user.name} ${user.lname}, Income from ${transaction.title}: + ₹${incomeFromTransaction}`);
+  
+          console.log(`Transaction updated for level income for user: ${user.name} ${user.lname}, Income from ${transaction.title}: + ₹${incomeFromTransaction}`);
         } else {
-          console.log(`Deposit already exists for level Income from user: ${user.name} for transaction: ${transaction.title}`);
+          console.log(`Deposit already exists for level income from user: ${user.name} for transaction: ${transaction.title}`);
         }
       }
-
+  
       return totalIncome;
     } catch (error) {
       console.error('Error updating transaction: ', error);
       return 0;
     }
   };
+  
+  
 
 
   return (

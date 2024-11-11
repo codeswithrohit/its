@@ -11,108 +11,178 @@ const Article = () => {
     <div class="linear-left"></div>
     <div class="linear-center"></div>
     <div class="linear-right"></div>
-    <div class="container">
-        <h2 class="inner-banner-title">Article of Gainbot</h2>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Article of Gainbot</li>
-            </ol>
-        </nav>
+    <div className="max-w-4xl bg-white mx-auto p-6">
+      {/* Article Title */}
+      <h1 className="text-3xl font-bold mb-4">Article of Gainbot</h1>
+
+      {/* Growth Artificial Intelligence Navigation Bot */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Growth Artificial Intelligence Navigation Bot</h2>
+        <p className="text-lg">
+          Welcome to Gainbot! Start here to succeed everywhere.
+        </p>
+      </section>
+
+      {/* About Us Section */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">About Us</h2>
+        <p className="text-lg">
+          Gainbot is a cutting-edge technology company revolutionizing industries through artificial intelligence, automation, and robotics. Our diverse team of experts collaborates to develop innovative solutions, empowering individuals and organizations to achieve more.
+        </p>
+      </section>
+
+      {/* Gainbot Founder Details */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Gainbot Founder Details</h2>
+        <p className="text-lg">
+          Mr. Matthew Rojwak stands out as a visionary leader in the tech and blockchain sector. His journey from a curious student to the founder of Bloq and a respected investor exemplifies the impact of passion and perseverance in the world of entrepreneurship.
+        </p>
+      </section>
+
+      {/* Early Life and Education */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Early Life and Education</h2>
+        <p className="text-lg">
+          Matthew Rojwak was born in the United States and raised in a family that valued innovation and entrepreneurship. His passion led him to pursue a degree in Business Administration with a focus on Information Technology, laying the groundwork for his future endeavors.
+        </p>
+      </section>
+
+      {/* Journey of Gainbot */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Journey of Gainbot</h2>
+        <p className="text-lg">
+          Matthew Rojwak started building Gainbot in 2020, but it fully came into functioning in 2022 and launched in August 2023. Since then, the community has rapidly grown with millions of users.
+        </p>
+      </section>
+
+      {/* Mission and Vision */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Mission</h2>
+        <p className="text-lg">
+          To harness the power of AI and automation to drive efficiency, productivity, and growth, while fostering a culture of innovation, excellence, and integrity.
+        </p>
+        <h2 className="text-2xl font-semibold mb-2">Vision</h2>
+        <ul className="list-disc pl-6">
+          <li>Pioneering innovation</li>
+          <li>Exceptional performance</li>
+          <li>Strategic partnerships</li>
+          <li>Ethical practices</li>
+        </ul>
+      </section>
+
+      {/* Trading Benefits */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Why Trading with Gainbot is Important</h2>
+        <h3 className="text-xl font-semibold mb-2">For Traders</h3>
+        <ul className="list-disc pl-6">
+          <li>Simplified Trading</li>
+          <li>Increased Efficiency</li>
+          <li>Improved Accuracy</li>
+          <li>Enhanced Risk Management</li>
+          <li>Access to Expert Insights</li>
+        </ul>
+        <h3 className="text-xl font-semibold mb-2">For Investors</h3>
+        <ul className="list-disc pl-6">
+          <li>Diversified Portfolio</li>
+          <li>Passive Income</li>
+          <li>Reduced Risk</li>
+          <li>Expert Guidance</li>
+          <li>Transparency</li>
+        </ul>
+        <h3 className="text-xl font-semibold mb-2">For Financial Freedom</h3>
+        <ul className="list-disc pl-6">
+          <li>Achieve Financial Goals</li>
+          <li>Wealth Creation</li>
+          <li>Financial Security</li>
+          <li>Peace of Mind</li>
+          <li>Freedom to Focus</li>
+        </ul>
+      </section>
+
+      {/* Why Choose Gainbot */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Why Choose Gainbot</h2>
+        <ul className="list-disc pl-6">
+          <li>Cutting-Edge Technology</li>
+          <li>Expert Team</li>
+          <li>Proven Track Record</li>
+          <li>Customer Support</li>
+          <li>Security and Compliance</li>
+        </ul>
+      </section>
+
+      {/* Step-by-step Guide */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Step-by-Step Guide on How to Earn with Gainbot</h2>
+        <h3 className="text-xl font-semibold mb-2">Getting Started</h3>
+        <ol className="list-decimal pl-6">
+          <li>Sign up: Create an account on Gainbot's platform.</li>
+          <li>Deposit funds: Fund your wallet with supported cryptocurrency or fiat currency.</li>
+          <li>Verify wallet: Complete KYC verification.</li>
+        </ol>
+        <h3 className="text-xl font-semibold mb-2">Trading with Gainbot</h3>
+        <ol className="list-decimal pl-6">
+          <li>Choose a trading bot: Select from various AI-powered trading bots.</li>
+          <li>Set trading parameters: Configure bot settings, risk management, and strategy.</li>
+          <li>Start trading: Activate the bot and let it trade automatically.</li>
+        </ol>
+      </section>
+
+      {/* Types of Income in Gainbot */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Types of Income in Gainbot.AI</h2>
+        <ul className="list-disc pl-6">
+          <li><strong>Sign-up bonus:</strong> Gainbot offers a free $1 USDT wealth for a trial of its features.</li>
+          <li><strong>Trade profit:</strong> Earn 15-20% on trade income with various market strategies.</li>
+          <li><strong>Referral program:</strong> Earn 5% for referring new users.</li>
+          <li><strong>Affiliate program:</strong> Earn rewards by promoting Gainbot.</li>
+          <li><strong>Re-top-up & Trade Bonus:</strong> Reinvest and earn a 5% bonus.</li>
+        </ul>
+      </section>
+
+      {/* Affiliate Income Criteria */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Affiliate Income Criteria</h2>
+        <p className="text-lg">
+          For each affiliate level, you must qualify by meeting certain criteria. Gainbot provides 15 levels of income based on direct referrals and investments.
+        </p>
+      </section>
+
+      {/* Straddle Strategy Overview */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Straddle Strategy Overview</h2>
+        <p className="text-lg">
+          A straddle involves buying both a call and a put option with the same strike price and expiration date, betting on significant price movement in either direction.
+        </p>
+        <h3 className="text-xl font-semibold mb-2">Steps to Implement a Straddle</h3>
+        <ul className="list-decimal pl-6">
+          <li>Choose the underlying asset.</li>
+          <li>Select strike price (at-the-money).</li>
+          <li>Determine expiration date.</li>
+          <li>Buy both options simultaneously.</li>
+        </ul>
+      </section>
+
+      {/* Withdrawal Process */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Withdrawal Process</h2>
+        <ol className="list-decimal pl-6">
+          <li>Request withdrawal: Withdraw earnings to your wallet.</li>
+          <li>Verification: Confirm withdrawal request.</li>
+          <li>Processing: Gainbot processes withdrawal within 24 - 72 hours.</li>
+        </ol>
+      </section>
+
+      {/* Fees */}
+      <section className="mb-6">
+        <h2 className="text-2xl font-semibold mb-2">Fees</h2>
+        <ul className="list-disc pl-6">
+          <li>Trading fees: 0.1% to 0.2% on each transaction.</li>
+          <li>Referral commission: 5% commission on the trading of referred users.</li>
+          <li>Affiliate program: Varies depending on your level.</li>
+        </ul>
+      </section>
     </div>
-    <div className="container bg-white mx-auto p-6 space-y-8">
-          {/* Growth Introduction */}
-          <section>
-            <h3 className="text-3xl font-semibold">Growth with Artificial Intelligence</h3>
-            <p>Welcome to Gainbot! Start here, succeed everywhere.</p>
-          </section>
-
-          {/* About Us */}
-          <section>
-            <h4 className="text-2xl font-bold">About Us</h4>
-            <p>
-              Gainbot is a cutting-edge technology company revolutionizing industries through artificial intelligence,
-              automation, and robotics. Our team develops innovative solutions that empower individuals and organizations
-              to achieve more.
-            </p>
-          </section>
-
-          {/* Founder Details */}
-          <section>
-            <h4 className="text-2xl font-bold">Founder: Mr. Matthew Rojwak</h4>
-            <p>
-              Mr. Matthew Rojwak, founder of Bloq and a respected American investor, is known for his pioneering work
-              in the tech and blockchain sectors. His journey from a student to a leader exemplifies the impact of
-              passion and perseverance in entrepreneurship.
-            </p>
-          </section>
-
-          {/* Mission and Vision */}
-          <section>
-            <h4 className="text-2xl font-bold">Mission</h4>
-            <p>
-              To harness the power of AI and automation to drive efficiency, productivity, and growth, while fostering
-              a culture of innovation, excellence, and integrity.
-            </p>
-            <h4 className="text-2xl font-bold mt-4">Vision</h4>
-            <ul className="list-disc pl-5">
-              <li>Pioneering innovation</li>
-              <li>Exceptional performance</li>
-              <li>Strategic partnerships</li>
-              <li>Ethical practices</li>
-            </ul>
-          </section>
-
-          {/* Reasons to Trade with Gainbot */}
-          <section>
-            <h4 className="text-2xl font-bold">Why Choose Gainbot?</h4>
-            <p>Here are some potential reasons why trading with Gainbot is beneficial:</p>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <h5 className="font-semibold">For Traders:</h5>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>Simplified Trading</li>
-                  <li>Increased Efficiency</li>
-                  <li>Improved Accuracy</li>
-                  <li>Enhanced Risk Management</li>
-                  <li>Access to Expert Insights</li>
-                </ul>
-              </div>
-              <div>
-                <h5 className="font-semibold">For Investors:</h5>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>Diversified Portfolio</li>
-                  <li>Passive Income</li>
-                  <li>Reduced Risk</li>
-                  <li>Expert Guidance</li>
-                  <li>Transparency</li>
-                </ul>
-              </div>
-            </div>
-          </section>
-
-          {/* Types of Income */}
-          <section>
-            <h4 className="text-2xl font-bold">Types of Income with Gainbot</h4>
-            <ul className="list-decimal pl-5 space-y-2">
-              <li><strong>Sign-up Bonus:</strong> Free $1 USDT for trial purposes.</li>
-              <li><strong>Trade Profit:</strong> Earn 15-20% on trades through AI-driven strategies.</li>
-              <li><strong>Referral Program:</strong> Earn commissions from referrals up to 2 levels.</li>
-              <li><strong>Affiliate Program:</strong> Maximize earnings with level-wise referral income.</li>
-              <li><strong>Re-top-up & Trade Bonuses:</strong> Reinvestment rewards of 5% and additional trade bonuses.</li>
-            </ul>
-          </section>
-
-          {/* Support and Contact */}
-          <section>
-            <h4 className="text-2xl font-bold">Support and Contact</h4>
-            <ul className="list-disc pl-5">
-              <li>Live Chat: 24/7 support</li>
-              <li>Email: Gainbot891@gmail.com</li>
-              <li>FAQ: Extensive knowledge base</li>
-            </ul>
-          </section>
-        </div>
 </div>
 
       

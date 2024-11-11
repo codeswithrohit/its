@@ -99,7 +99,7 @@ const Profile = () => {
     <div 
       className="flex min-h-screen"
       style={{
-        backgroundImage: 'url(https://img.freepik.com/free-vector/gradient-stock-market-concept_23-2149166910.jpg?t=st=1730680185~exp=1730683785~hmac=87a70cd22f5c4311c4ef56bc5fbe413d80031beb491286fe061a9b54f6ec1faa&w=2000)',
+        backgroundImage: 'url(https://img.freepik.com/free-vector/global-business-background-with-stock-chart-blue-tone_53876-119546.jpg?t=st=1731309522~exp=1731313122~hmac=290d04c8cf9083ee4d199ae1eceb282c8339a58403bc101af7cc9bf4ad5c6d75&w=2000',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
