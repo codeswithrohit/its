@@ -8,8 +8,8 @@ const Innovator = () => {
         <div class="container">
           <div class="row align-items-center">
           <div class="col-lg-7 col-md-9 pe-lg-5">
-  <div class="section-title text-start mb-40">
-    <h2>Features of Gainbot</h2>
+  <div class="section-title text-start mb-4">
+    <h2 className="font-serif" >Features of Gainbot</h2>
     <p>
       Gainbot.AI trading bot is an automated software program that uses AI to analyze market data and execute trades on your behalf.
     </p>

@@ -209,7 +209,7 @@ const Withdraw = () => {
             onClick={() => setActiveTab('arcade')}
             className={`flex-1 py-2 mx-2 font-semibold rounded transition-colors duration-300 ${activeTab === 'arcade' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'}`}
           >
-            QR ID Info
+           Wallet Address
           </button>
         </div>
 
@@ -243,7 +243,7 @@ const Withdraw = () => {
           </div>
         ) : (
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">QR Detail Info</h2>
+            <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">Wallet Address Info</h2>
             <label className="block text-gray-700 font-medium mb-1" htmlFor="upiId">
               UPI ID
             </label>

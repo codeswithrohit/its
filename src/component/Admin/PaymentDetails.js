@@ -173,13 +173,14 @@ const PaymentDetails = () => {
               <div>
                 <p>ID: {qr.id}</p>
                 <img src={qr.imageUrl} alt="QR Code" className="w-16 h-16 mt-2" />
-              </div>
-              <button
+                <button
                 onClick={() => handleEdit(qr)}
-                className="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition-colors"
+                className="bg-yellow-500 mt-4 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition-colors"
               >
                 Edit
               </button>
+              </div>
+         
             </li>
           ))}
         </ul>

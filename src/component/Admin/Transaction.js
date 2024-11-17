@@ -2,9 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { firebase } from '../../Firebase/config';
 import { toast, ToastContainer } from 'react-toastify';
 
+const ITEMS_PER_PAGE = 10; // Number of items per page
+
 const Transaction = () => {
   const [transactions, setTransactions] = useState([]);
   const [status, setStatus] = useState('Pending');
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchTransaction = async () => {
@@ -16,25 +19,22 @@ const Transaction = () => {
     fetchTransaction();
   }, []);
 
-  // Filter transactions for title "Deposit for gainbot"
   const filteredTransactions = transactions.flatMap(user =>
-    Array.isArray(user.Transaction) ?
-      user.Transaction
-        .filter(transaction => transaction.title === "Deposit for gainbot")
-        .map(transaction => ({
-          ...transaction,
-          name: user.name,
-          email: user.email,
-          number: user.number,
-          userId: user.id // Keep the user ID for updates if needed
-        })) : []
-  ).sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date descending
+    Array.isArray(user.Transaction)
+      ? user.Transaction
+          .filter(transaction => transaction.title === "Deposit for gainbot")
+          .map(transaction => ({
+            ...transaction,
+            name: user.name,
+            email: user.email,
+            number: user.number,
+            userId: user.id
+          }))
+      : []
+  ).sort((a, b) => new Date(b.date) - new Date(a.date));
 
-
-  // Handle status update
   const handleUpdateStatus = async (userId, transactionTitle, transactionDate, newStatus) => {
     const db = firebase.firestore();
-    // Find the user document
     const userDocRef = db.collection('users').doc(userId);
     const userDoc = await userDocRef.get();
 
@@ -46,11 +46,8 @@ const Transaction = () => {
       );
 
       if (transactionIndex !== -1) {
-        // Update the status of the transaction
         userData.Transaction[transactionIndex].Status = newStatus;
         await userDocRef.update({ Transaction: userData.Transaction });
-
-        // Show a success message
         toast.success(`Status updated to ${newStatus}`);
       } else {
         toast.error('Transaction not found');
@@ -60,14 +57,25 @@ const Transaction = () => {
     }
   };
 
-  // Log the transactions data
-  console.log("data", filteredTransactions);
+  // Pagination logic
+  const totalPages = Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentTransactions = filteredTransactions.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
+
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4 text-gray-900">Transaction</h1>
 
-      {filteredTransactions.length > 0 ? (
+      {currentTransactions.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="min-w-full border border-gray-200">
             <thead>
@@ -81,28 +89,28 @@ const Transaction = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredTransactions.map((transaction, index) => (
+              {currentTransactions.map((transaction, index) => (
                 <tr key={index} className="hover:bg-gray-50">
                   <td className="border-b px-4 py-2">{transaction.name}</td>
                   <td className="border-b px-4 py-2">{transaction.email}</td>
                   <td className="border-b px-4 py-2">{transaction.number}</td>
-                  <td className="border-b px-4 py-2">{transaction.amount}</td>
+                  <td className="border-b px-4 py-2">$ {transaction.amount}</td>
                   <td className="border-b px-4 py-2">
                     {transaction.screenshot && (
-                      <a href={transaction.screenshot} target="_blank" rel="noopener noreferrer">
-                        View Image
+                      <a className="text-blue-500" href={transaction.screenshot} target="_blank" rel="noopener noreferrer">
+                        View Receipt
                       </a>
                     )}
                   </td>
                   <td className="border-b px-4 py-2">
                     <select
-                      value={transaction.Status} // Use the transaction's current status
+                      value={transaction.Status}
                       onChange={(e) => {
                         const newStatus = e.target.value;
-                        handleUpdateStatus(transaction.userId, transaction.title, transaction.date, newStatus); // Call the update function
+                        handleUpdateStatus(transaction.userId, transaction.title, transaction.date, newStatus);
                       }}
                       className="p-2 border rounded"
-                      disabled={transaction.Status === 'Paid'} // Disable if status is 'Paid'
+                      disabled={transaction.Status === 'Paid'}
                     >
                       <option value="Pending">Pending</option>
                       <option value="Paid">Paid</option>
@@ -113,6 +121,25 @@ const Transaction = () => {
               ))}
             </tbody>
           </table>
+          <div className="flex justify-between items-center mt-4">
+            <button
+              className="px-4 py-2 bg-gray-300 rounded"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              className="px-4 py-2 bg-gray-300 rounded"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
         </div>
       ) : (
         <p>No transactions found for "Deposit for gainbot".</p>

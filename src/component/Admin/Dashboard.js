@@ -159,7 +159,7 @@ const Dashboard = () => {
                   <td className="border-b px-4 py-2">{transaction.name}</td>
                   <td className="border-b px-4 py-2">{transaction.email}</td>
                   <td className="border-b px-4 py-2">{transaction.number}</td>
-                  <td className="border-b px-4 py-2">{transaction.amount}</td>
+                  <td className="border-b px-4 py-2">$ {transaction.amount}</td>
                   <td className="border-b px-4 py-2">
                     {transaction.screenshot && (
                       <a href={transaction.screenshot} target="_blank" rel="noopener noreferrer">
@@ -216,7 +216,7 @@ const Dashboard = () => {
                   <td className="border-b px-4 py-2">{transaction.name}</td>
                   <td className="border-b px-4 py-2">{transaction.email}</td>
                   <td className="border-b px-4 py-2">{transaction.number}</td>
-                  <td className="border-b px-4 py-2">{transaction.amount}</td>
+                  <td className="border-b px-4 py-2">$ {transaction.amount}</td>
                   <td className="border-b px-4 py-2">
                     {transaction.qrcodeimage && (
                       <a href={transaction.qrcodeimaget} target="_blank" rel="noopener noreferrer">

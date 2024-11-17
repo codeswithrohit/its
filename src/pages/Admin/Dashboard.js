@@ -7,6 +7,7 @@ import Dashboard from '../../component/Admin/Dashboard';
 import PaymentDetails from '../../component/Admin/PaymentDetails';
 import Transaction from '../../component/Admin/Transaction';
 import WithdrawTransaction from '../../component/Admin/WithdrawTransaction'; // Import the new component
+import Users from '../../component/Admin/Users';
 
 const Profile = () => {
   const navigate = useNavigate(); 
@@ -27,6 +28,8 @@ const Profile = () => {
     switch (activeTab) {
       case 'Dashboard':
         return <Dashboard />;
+        case 'Users':
+          return <Users />;
       case 'Transaction':
         return <Transaction />;
       case 'WithdrawTransaction': // Add case for Withdraw Transaction
@@ -55,6 +58,7 @@ const Profile = () => {
           {/* Sidebar links */}
           {[
             { name: 'Dashboard', icon: <FaTachometerAlt /> },
+            { name: 'Users', icon: <FaUser /> },
             { name: 'Transaction', icon: <FaUser /> },
             { name: 'WithdrawTransaction', icon: <FaUserCircle /> }, // New Withdraw Transaction tab
             { name: 'PaymentDetails', icon: <FaUserCircle /> },
