@@ -4,6 +4,7 @@ import Top from '../../component/Top/Top'
 import Advanced from '../../component/Advanced/Advanced'
 import Footer from '../../component/Footer/Footer'
 import Header from '../../component/Header/Header'
+import TradingChart from '../../component/TradingChart'
 
 const Trade = () => {
   return (
@@ -24,6 +25,7 @@ const Trade = () => {
         </nav>
     </div>
 </div>
+<TradingChart/>
       <Top/>
       <Advanced/>
       <Footer/>

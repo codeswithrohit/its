@@ -37,7 +37,7 @@ const Dashboard = ({ userData, usersData }) => {
     .filter(tx => tx.title.startsWith("Trade Income"))
     .reduce((total, tx) => total + parseFloat(tx.amount || 0), 0);
   
-  const walletBalance = transactions
+  const totalProfit = transactions
     .reduce((total, tx) => {
       if (tx.method.startsWith("Deposit") && (tx.Status === "Paid" || !tx.Status)) {
         return total + parseFloat(tx.amount || 0);
@@ -48,9 +48,11 @@ const Dashboard = ({ userData, usersData }) => {
       return total;
     }, 0);
 
-  const totalProfit = transactions
+  const walletBalance = transactions
     .filter(tx => tx.title !== "Deposit for gainbot")
     .reduce((total, tx) => total + parseFloat(tx.amount || 0), 0);
+
+    const Capping = totalProfit/myInvestment
 
   const userTokenId = userData?.tokenId;
   const totalUsers = usersData.filter(user => {
@@ -80,9 +82,18 @@ const Dashboard = ({ userData, usersData }) => {
   return (
     <div className="min-h-screen px-4 py-8">
     <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
-  <h1 className="md:text-4xl font-bold text-white text-center text-xl mb-8">Welcome To {userData?.name}</h1>
+  <h1 className="md:text-4xl font-bold text-white text-center text-xl mb-8">Welcome, {userData?.name}</h1>
   <h1 className="md:text-4xl font-bold text-white text-center text-xl  mb-8">
+    <span>Join at</span> <br/>
+    <span className='text-md' >
   {userData?.createdAt ? new Date(userData.createdAt.seconds * 1000).toLocaleString() : "Loading..."}
+  </span>
+</h1>
+<h1 className="md:text-4xl font-bold text-white text-center text-xl  mb-8">
+    <span>Capping</span> <br/>
+    <span className='text-md' >
+    {Capping.toFixed(2)}X
+  </span>
 </h1>
 
   {/* <h1 className="text-4xl font-bold text-white text-center mb-8">Welcome To {userData?.name}</h1>

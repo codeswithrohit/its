@@ -76,6 +76,15 @@ function App() {
     return () => unsubscribeAuth();
   }, [usersData]);
 
+  const transactions = userData?.Transaction || [];
+  const myInvestment = transactions
+  .filter(tx => tx.title === "Deposit for gainbot" && tx.Status === "Paid")
+  .reduce((total, tx) => total + parseFloat(tx.amount || 0), 0);
+  const totalProfit = transactions
+  .filter(tx => tx.title !== "Deposit for gainbot")
+  .reduce((total, tx) => total + parseFloat(tx.amount || 0), 0);
+
+  const Capping = totalProfit/myInvestment
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -164,6 +173,10 @@ function App() {
   }, [lastUpdated, myuser, hasUpdatedToday]);
   
   const distributeInvestmentIncome = async () => {
+    if (Capping >= 4) {
+      console.log("Capping limit reached. No further Trade Income updates.");
+      return; // Skip income distribution if capping is 4 or more
+    }
     try {
       const userRef = firebase.firestore().collection('users').doc(myuser.uid);
       const userDoc = await userRef.get();
@@ -319,6 +332,10 @@ function App() {
   };
 
   const distributeDirectIncome = async (user, percentage) => {
+    if (Capping >= 4) {
+      console.log("Capping limit reached. No further Affiliate Income or Sponsor Income updates.");
+      return; // Skip income distribution if capping is 4 or more
+    }
     try {
       const currentDateTime = new Date().toISOString();
       const transactions = user.Transaction;
@@ -407,6 +424,10 @@ function App() {
   };
 
   const distributeLevelIncome = async (user, percentage) => {
+    if (Capping >= 4) {
+      console.log("Capping limit reached. No further Sponsor Income updates.");
+      return 0; // Skip income distribution if capping is 4 or more
+    }
     try {
       const currentDateTime = new Date().toISOString();
       const transactions = user.Transaction;
