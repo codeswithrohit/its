@@ -25,7 +25,7 @@ const Trade = () => {
         </nav>
     </div>
 </div>
-<TradingChart/>
+{/* <TradingChart/> */}
       <Top/>
       <Advanced/>
       <Footer/>

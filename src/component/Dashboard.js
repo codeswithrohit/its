@@ -37,7 +37,7 @@ const Dashboard = ({ userData, usersData }) => {
     .filter(tx => tx.title.startsWith("Trade Income"))
     .reduce((total, tx) => total + parseFloat(tx.amount || 0), 0);
   
-  const totalProfit = transactions
+  const walletBalance = transactions
     .reduce((total, tx) => {
       if (tx.method.startsWith("Deposit") && (tx.Status === "Paid" || !tx.Status)) {
         return total + parseFloat(tx.amount || 0);
@@ -48,11 +48,17 @@ const Dashboard = ({ userData, usersData }) => {
       return total;
     }, 0);
 
-  const walletBalance = transactions
+    const totalProfit = transactions
     .filter(tx => tx.title !== "Deposit for gainbot")
-    .reduce((total, tx) => total + parseFloat(tx.amount || 0), 0);
+    .reduce((total, tx) => {
+      // Check if the transaction method starts with "Withdraw" and status is either "Pending" or "Paid"
+      if (tx.method.startsWith("Withdraw") && (tx.Status === "Pending" || tx.Status === "Paid")) {
+        return total - parseFloat(tx.amount || 0); // Subtract the amount for withdrawal transactions
+      }
+      return total + parseFloat(tx.amount || 0); // Add the amount for other transactions
+    }, 0);
+    const Capping = myInvestment !== 0 ? totalProfit / myInvestment : 0;
 
-    const Capping = totalProfit/myInvestment
 
   const userTokenId = userData?.tokenId;
   const totalUsers = usersData.filter(user => {

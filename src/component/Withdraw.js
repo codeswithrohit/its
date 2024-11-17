@@ -51,8 +51,8 @@ const Withdraw = () => {
     console.log("transactions", transactions); // Log the transactions array
 
     const total = transactions.reduce((acc, transaction) => {
-        // Check if the transaction method is 'Deposit'
-        if (transaction.method === 'Deposit') {
+        // Check if the transaction method is 'Deposit' and title is not 'Gainbot'
+        if (transaction.method === 'Deposit' && transaction.title !== 'Deposit for gainbot') {
             // Check if the Status is 'Paid', or if it is not available (undefined or null)
             if (transaction.Status === 'Paid' || !transaction.Status) {
                 return acc + parseFloat(transaction.amount); // Add the amount to the accumulator
@@ -73,6 +73,7 @@ const Withdraw = () => {
 
     setTotalBalance(total); // Set the total balance
 };
+
 
 
   const handleQrCodeUpload = async (file) => {
@@ -112,38 +113,60 @@ const Withdraw = () => {
   };
 
   const handlePayment = async () => {
-    const withdrawAmount = parseFloat(amount); // Use the amount entered by the user
-
+    const charge = parseFloat(amount) / 6;
+    const withdrawAmount = parseFloat(amount) + charge; // Use the amount entered by the user
+  
     if (isNaN(withdrawAmount) || withdrawAmount <= 0) {
       toast.error('Please enter a valid amount to withdraw.');
       return;
     }
-
+  
+    if (withdrawAmount < 8) {
+      toast.error('The minimum withdrawal amount is $10.');
+      return;
+    }
+  
     if (withdrawAmount > totalBalance) {
       toast.error('Withdrawal amount cannot exceed your total balance.');
       return;
     }
-
+  
     const user = firebase.auth().currentUser;
+    if (!user) {
+      toast.error('User not authenticated.');
+      return;
+    }
+  
     const currentDateTime = new Date().toISOString();
-
+  
+    // Check if qrCodeUrl is valid
+    if (!qrCodeUrl) {
+      toast.error('QR Code URL is missing or invalid.');
+      return;
+    }
+  
     const depositData = {
       amount: withdrawAmount,
       date: currentDateTime,
       method: "Withdraw",
       title: 'Withdraw from gainbot',
       Status: "Pending",
-      qrcodeimage: qrCodeUrl,
+      qrcodeimage: qrCodeUrl, // Ensure this is not empty or undefined
       upiId: upiId,
     };
-
+  
     setIsSubmitting(true); // Set submitting to true to show loading state
+  
     try {
+      // Add transaction data to the user's document in Firestore
       await firebase.firestore().collection('users').doc(user.uid).update({
         Transaction: firebase.firestore.FieldValue.arrayUnion(depositData),
       });
+  
+      // Update the total balance for the user (if applicable)
       calculateTotalBalance([...userData.Transaction, depositData]);
-
+  
+      // Prepare deposit data for the Transaction collection
       const depositCollectionData = {
         ...depositData,
         name: userData?.name || 'Unknown',
@@ -151,11 +174,13 @@ const Withdraw = () => {
         number: userData?.number || '0000000000',
         userid: user.uid,
       };
-
+  
+      // Add transaction details to the Transaction collection
       await firebase.firestore().collection('Transaction').add(depositCollectionData);
-
+  
+      // Show success message
       toast.success("Withdrawal successful! Funds will be transferred to your account within 24 hours.");
-
+  
       setAmount(''); // Clear the amount input
     } catch (error) {
       console.error('Error processing withdrawal: ', error);
@@ -164,6 +189,7 @@ const Withdraw = () => {
       setIsSubmitting(false); // Reset loading state
     }
   };
+  
 
   if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
 
@@ -191,7 +217,7 @@ const Withdraw = () => {
           <div>
             <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">Withdraw Funds</h2>
             <div className="text-center mb-4">
-              <p className="text-gray-600">Wallet Balance</p>
+              {/* <p className="text-gray-600">Wallet Balance</p> */}
               <p className="text-3xl font-semibold text-green-600">${totalBalance.toFixed(2)}</p>
             </div>
             <label className="block text-gray-700 font-medium mb-1" htmlFor="amount">
@@ -205,7 +231,8 @@ const Withdraw = () => {
               onChange={(e) => setAmount(e.target.value)}
               className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-            <p className="text-gray-600">Transaction amount in this ID: {upiId}</p>
+               <p className="text-red-600">Withdrawal charges is 6%</p>
+            <p className="text-green-600">Transaction amount in this ID: {upiId}</p>
             <button
               onClick={handlePayment} // Call handlePayment on click
               className="w-full px-4 py-2 mt-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors duration-300"
