@@ -24,9 +24,9 @@ const home = () => {
       <Hero/>
       <Innovator/>
       <Matrix/>
-      <Investment/>
-      <Maximizing/>
-      <Unlock/>
+      {/* <Investment/> */}
+      {/* <Maximizing/> */}
+      {/* <Unlock/> */}
      <Advanced/>
      <Top/>
      <AdvancedPredictive/>

@@ -59,7 +59,8 @@ const Dashboard = ({ userData, usersData }) => {
     }, 0);
     const Capping = myInvestment !== 0 ? totalProfit / myInvestment : 0;
 
-
+const totalcap = myInvestment*4
+const Remainingcap = totalcap-totalProfit
   const userTokenId = userData?.tokenId;
   const totalUsers = usersData.filter(user => {
     const referralIds = user.referralId ? user.referralId.split(',') : [];
@@ -87,6 +88,13 @@ const Dashboard = ({ userData, usersData }) => {
 
   return (
     <div className="min-h-screen px-4 py-8">
+<div className="flex items-center justify-center ">
+  <div className="bg-white rounded-full p-4">
+    <img src='/gainbot.png' className='w-24 h-24 object-contain' />
+  </div>
+</div>
+
+
     <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
   <h1 className="md:text-4xl font-bold text-white text-center text-xl mb-8">Welcome, {userData?.name}</h1>
   <h1 className="md:text-4xl font-bold text-white text-center text-xl  mb-8">
@@ -95,12 +103,12 @@ const Dashboard = ({ userData, usersData }) => {
   {userData?.createdAt ? new Date(userData.createdAt.seconds * 1000).toLocaleString() : "Loading..."}
   </span>
 </h1>
-<h1 className="md:text-4xl font-bold text-white text-center text-xl  mb-8">
+{/* <h1 className="md:text-4xl font-bold text-white text-center text-xl  mb-8">
     <span>Capping</span> <br/>
     <span className='text-md' >
     {Capping.toFixed(2)}X
   </span>
-</h1>
+</h1> */}
 
   {/* <h1 className="text-4xl font-bold text-white text-center mb-8">Welcome To {userData?.name}</h1>
   <h1 className="text-4xl font-bold text-white text-center mb-8">Welcome To {userData?.name}</h1>
@@ -108,7 +116,7 @@ const Dashboard = ({ userData, usersData }) => {
 </div>
 
 
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-8 max-w-xl mx-auto">
+      <div className="bg-white rounded-lg shadow-lg px-6 py-3 mb-8 max-w-xl mx-auto">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4 text-center">Your Referral Code</h2>
         <div className="flex items-center justify-center space-x-4">
           <input
@@ -174,6 +182,20 @@ const Dashboard = ({ userData, usersData }) => {
         }, {
           title: 'Total Profit',
           value: `$${totalProfit.toFixed(2)}`,
+          icon: <FaWallet />,
+          bg: 'bg-gradient-to-b from-teal-200 to-teal-100',
+          borderColor: 'border-teal-600',
+          iconColor: 'bg-teal-600'
+        }, {
+          title: 'Remaining Cap',
+          value: `$${Remainingcap.toFixed(2)}`,
+          icon: <FaWallet />,
+          bg: 'bg-gradient-to-b from-purple-200 to-purple-100',
+          borderColor: 'border-purple-600',
+          iconColor: 'bg-purple-600'
+        }, {
+          title: 'Total Capiing',
+          value: `$${totalcap.toFixed(2)}`,
           icon: <FaWallet />,
           bg: 'bg-gradient-to-b from-teal-200 to-teal-100',
           borderColor: 'border-teal-600',

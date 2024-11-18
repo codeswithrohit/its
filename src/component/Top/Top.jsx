@@ -2,12 +2,12 @@ import React from "react";
 
 const Top = () => {
   return (
-    <div class="conversion-section bg-color pt-110 pb-110">
+    <div class="conversion-section bg-color pt-10 pb-10">
       <div class="linear-right"></div>
       <div class="container">
         <div class="row justify-content-center g-4">
           <div class="col-lg-5">
-            <div class="section-title style-two text-center mb-60">
+            <div class="section-title style-two text-center mb-10">
               <h2>Top Crypto Conversions at Your Fingertips</h2>
               <p>
                 Explore the most popular cryptocurrency conversions on

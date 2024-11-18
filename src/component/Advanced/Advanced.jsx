@@ -2,14 +2,14 @@ import React from "react";
 
 const Advanced = () => {
   return (
-    <div>
-      <div class="currency-section full--width pt-110 pb-110">
+    <div className="bg-black" >
+      <div class="currency-section full--width pt-10 pb-10">
         <div class="container-fluid">
           <div class="row justify-content-center">
             <div class="col-xl-5 col-lg-7 col-md-9">
-              <div class="section-title text-center mb-60">
+              <div class="section-title text-center text-white mb-10">
                 <h2>Advanced Currency Exchange</h2>
-                <p>
+                <p className="text-white" >
                   Navigate the cryptocurrency market with precision. Our
                   platform offers real-time pricing, comprehensive market
                   analysis, and trend forecasts to inform and enhance your
@@ -23,7 +23,7 @@ const Advanced = () => {
             <div class="col-lg-12">
               <div class="currency-wrapper">
                 <div class="text-start">
-                  <a href="trades.html" class="i-btn read-more-btn">
+                  <a href="trades.html" class="i-btn text-white read-more-btn">
                     Explore Trades <i class="bi bi-arrow-right"></i>
                   </a>
                 </div>
@@ -34,7 +34,7 @@ const Advanced = () => {
               <div class="table-container">
                 <table id="myTable" class="table">
                   <thead>
-                    <tr>
+                    <tr className="" >
                       <th scope="col">Name</th>
                       <th scope="col">Pair Price</th>
                       <th scope="col">Daily Change</th>

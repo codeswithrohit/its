@@ -76,6 +76,7 @@ const Transaction = () => {
                 <th className="border-b px-4 py-2">Email</th>
                 <th className="border-b px-4 py-2">Number</th>
                 <th className="border-b px-4 py-2">Amount</th>
+                <th className="border-b px-4 py-2">Withdrawal Amount</th>
                 <th className="border-b px-4 py-2">Qr Code</th>
                 <th className="border-b px-4 py-2">Id</th>
                 <th className="border-b px-4 py-2">Update Status</th>
@@ -87,7 +88,8 @@ const Transaction = () => {
                   <td className="border-b px-4 py-2">{transaction.name}</td>
                   <td className="border-b px-4 py-2">{transaction.email}</td>
                   <td className="border-b px-4 py-2">{transaction.number}</td>
-                  <td className="border-b px-4 py-2">{transaction.amount}</td>
+                  <td className="border-b px-4 py-2">$ {transaction.amount}</td>
+                  <td className="border-b px-4 py-2">$ {transaction.withdrawAmount}</td>
                   <td className="border-b px-4 py-2">
                     {transaction.qrcodeimage && (
                       <a href={transaction.qrcodeimaget} target="_blank" rel="noopener noreferrer">

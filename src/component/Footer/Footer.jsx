@@ -3,7 +3,7 @@ import React from "react";
 const Footer = () => {
   return (
     <div>
-      <footer class="pt-80 position-relative">
+      <footer class="pt-10 position-relative">
         <div class="footer-vector">
           {/* <img src="default/images/481x481.jpg" alt="Vector Image" /> */}
         </div>

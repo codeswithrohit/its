@@ -4,7 +4,6 @@ import Top from '../../component/Top/Top'
 import Advanced from '../../component/Advanced/Advanced'
 import Footer from '../../component/Footer/Footer'
 import Header from '../../component/Header/Header'
-import TradingChart from '../../component/TradingChart'
 
 const Trade = () => {
   return (
@@ -25,7 +24,19 @@ const Trade = () => {
         </nav>
     </div>
 </div>
-{/* <TradingChart/> */}
+<div className="video-container relative ">
+          <video
+            src="/trade.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+           className="w-full max-h-[650px] object-cover rounded-lg shadow-lg"
+          >
+            Your browser does not support the video tag.
+          </video>
+        </div>
+
       <Top/>
       <Advanced/>
       <Footer/>

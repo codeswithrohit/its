@@ -11,9 +11,9 @@ import 'swiper/css/pagination';
 import { Navigation, Pagination, Mousewheel, Keyboard } from 'swiper/modules';
 const Success = () => {
   return (
-    <>
+    <div className="bg-black" >
     
-      <div class="testimonial-section pt-110 pb-110">
+      <div class="testimonial-section pt-10 pb-10">
         <div class="quote">
           <i class="bi bi-quote"></i>
         </div>
@@ -21,9 +21,9 @@ const Success = () => {
         <div class="container">
           <div class="row justify-content-center">
             <div class="col-lg-5">
-              <div class="section-title text-center mb-60">
-                <h2>Success Stories from Our Clients</h2>
-                <p>
+              <div class="section-title text-center mb-10">
+                <h2 className="text-white" >Success Stories from Our Clients</h2>
+                <p className="text-white" >
                   Discover how FinFunder has empowered individuals and
                   businesses in their crypto trading and investment journey.{" "}
                 </p>
@@ -76,7 +76,7 @@ const Success = () => {
                 <div class="">
                     <div class="testimonial-item">
                       <div class="content">
-                        <p>
+                        <p className="text-white" >
                           As a professional in finance, I&#039;m impressed by
                           FinFunder&#039;s precise market analytics and
                           user-friendly interface. It&#039;s revolutionized the
@@ -176,7 +176,7 @@ const Success = () => {
         
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

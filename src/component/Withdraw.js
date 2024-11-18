@@ -47,6 +47,8 @@ const Withdraw = () => {
     fetchUserData();
   }, []);
 
+  console.log("usersdata",userData)
+
   const calculateTotalBalance = (transactions) => {
     console.log("transactions", transactions); // Log the transactions array
 
@@ -75,53 +77,63 @@ const Withdraw = () => {
 };
 
 
+const handleQrCodeUpload = async (file) => {
+  if (file) {
+    setQrCodeImage(file);
+    const storageRef = firebase.storage().ref();
+    const fileRef = storageRef.child(`qr_codes/${file.name}`);
+    await fileRef.put(file);
+    const fileUrl = await fileRef.getDownloadURL();
+    return fileUrl; // Return the file URL after it's uploaded
+  }
+  return ''; // Return an empty string if no file is provided
+};
 
-  const handleQrCodeUpload = async (file) => {
-    if (file) {
-      setQrCodeImage(file);
-      const storageRef = firebase.storage().ref();
-      const fileRef = storageRef.child(`qr_codes/${file.name}`);
-      await fileRef.put(file);
-      const fileUrl = await fileRef.getDownloadURL();
-      setQrCodeUrl(fileUrl);
-    }
-  };
+const handleSave = async () => {
+  if (!upiId || !qrCodeImage) {
+    toast.error('Please fill in UPI ID and upload a QR code image.');
+    return;
+  }
 
-  const handleSave = async () => {
-    if (!upiId || !qrCodeImage) {
-      toast.error('Please fill in UPI ID and upload a QR code image.');
+  setIsSubmitting(true);
+  try {
+    // Ensure the QR code is uploaded and URL is fetched before saving
+    const uploadedQrCodeUrl = await handleQrCodeUpload(qrCodeImage);  // Get the uploaded URL
+    
+    if (!uploadedQrCodeUrl) {
+      toast.error('Failed to upload QR code image.');
       return;
     }
 
-    setIsSubmitting(true);
-    try {
-      await handleQrCodeUpload(qrCodeImage);
-      const user = firebase.auth().currentUser;
-      if (user) {
-        await firebase.firestore().collection('users').doc(user.uid).update({
-          qrdetails: { upiId, qrCodeUrl },
-        });
-        toast.success('QR details saved successfully!');
-      }
-    } catch (error) {
-      console.error('Error saving QR details: ', error);
-      toast.error('Failed to save QR details. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-      setIsEditMode(false);
+    // Now uploadedQrCodeUrl will be correctly updated
+    const user = firebase.auth().currentUser;
+    if (user) {
+      await firebase.firestore().collection('users').doc(user.uid).update({
+        qrdetails: { upiId, qrCodeUrl: uploadedQrCodeUrl },
+      });
+      toast.success('QR details saved successfully!');
     }
-  };
+  } catch (error) {
+    console.error('Error saving QR details: ', error);
+    toast.error('Failed to save QR details. Please try again.');
+  } finally {
+    setIsSubmitting(false);
+    setIsEditMode(false);
+  }
+};
+
+  
 
   const handlePayment = async () => {
-    const charge = parseFloat(amount) / 6;
-    const withdrawAmount = parseFloat(amount) + charge; // Use the amount entered by the user
+    const charge = parseFloat(amount) * 0.06;
+    const withdrawAmount = parseFloat(amount) - charge; // Use the amount entered by the user
   
     if (isNaN(withdrawAmount) || withdrawAmount <= 0) {
       toast.error('Please enter a valid amount to withdraw.');
       return;
     }
   
-    if (withdrawAmount < 8) {
+    if (amount < 10) {
       toast.error('The minimum withdrawal amount is $10.');
       return;
     }
@@ -146,7 +158,8 @@ const Withdraw = () => {
     }
   
     const depositData = {
-      amount: withdrawAmount,
+      amount: amount,
+      withdrawAmount:withdrawAmount,
       date: currentDateTime,
       method: "Withdraw",
       title: 'Withdraw from gainbot',
@@ -245,12 +258,12 @@ const Withdraw = () => {
           <div>
             <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">Wallet Address Info</h2>
             <label className="block text-gray-700 font-medium mb-1" htmlFor="upiId">
-              UPI ID
+            Wallet Address
             </label>
             <input
               type="text"
               id="upiId"
-              placeholder="Enter UPI ID"
+              placeholder="Enter Wallet Address"
               value={upiId}
               onChange={(e) => setUpiId(e.target.value)}
               className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -258,7 +271,7 @@ const Withdraw = () => {
             />
 
             <label className="block text-gray-700 font-medium mb-1" htmlFor="qrCode">
-              Upload QR Code Image
+              Upload Wallet QR Code Image
             </label>
             <input
               type="file"

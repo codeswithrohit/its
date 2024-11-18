@@ -96,15 +96,16 @@ const Profile = () => {
   };
 
   return (
-    <div 
-      className="flex min-h-screen"
-      style={{
-        backgroundImage: 'url(https://img.freepik.com/free-vector/global-business-background-with-stock-chart-blue-tone_53876-119546.jpg?t=st=1731309522~exp=1731313122~hmac=290d04c8cf9083ee4d199ae1eceb282c8339a58403bc101af7cc9bf4ad5c6d75&w=2000',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      }}
-    >
+<div 
+  className="flex min-h-screen"
+  style={{
+    backgroundImage: 'url(/IMG_6086.PNG)', // Ensure the correct path to your image
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  }}
+>
+
       <button
         className="absolute top-4 right-4 z-50 p-2 bg-gray-900 text-white rounded-full lg:hidden"
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
