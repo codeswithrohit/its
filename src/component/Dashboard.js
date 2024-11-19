@@ -115,6 +115,8 @@ const Remainingcap = totalcap-totalProfit
     setPopupData(teamUsers);
     setShowPopup(true);
   };
+
+
   const handleBellClick = () => {
     setShowNotification(prev => !prev);
   };
@@ -221,95 +223,134 @@ const Remainingcap = totalcap-totalProfit
         </button>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 w-full mx-auto">
-        {[{
-          title: 'My Investment',
-          value: `$${myInvestment.toFixed(2)}`,
-          icon: <FaWallet />,
-          bg: 'bg-gradient-to-b from-blue-200 to-blue-100',
-          borderColor: 'border-blue-600',
-          iconColor: 'bg-blue-600'
-        }, {
-          title: 'My Profit',
-          value: `$${myProfit.toFixed(2)}`,
-          icon: <FaWallet />,
-          bg: 'bg-gradient-to-b from-green-200 to-green-100',
-          borderColor: 'border-green-600',
-          iconColor: 'bg-green-600'
-        }, {
-          title: 'My Direct',
-          value: totalDirect,
-          icon: <FaUsers />,
-          bg: 'bg-gradient-to-b from-pink-200 to-pink-100',
-          borderColor: 'border-pink-500',
-          iconColor: 'bg-pink-600',
-          onClick: handleViewDirect
-        }, {
-          title: 'My Team',
-          value: totalUsers,
-          icon: <FaUsers />,
-          bg: 'bg-gradient-to-b from-yellow-200 to-yellow-100',
-          borderColor: 'border-yellow-500',
-          iconColor: 'bg-yellow-500',
-          onClick: handleViewTeam
-        }, {
-          title: 'Wallet Balance',
-          value: `$${walletBalance.toFixed(2)}`,
-          icon: <FaWallet />,
-          bg: 'bg-gradient-to-b from-purple-200 to-purple-100',
-          borderColor: 'border-purple-600',
-          iconColor: 'bg-purple-600'
-        }, {
-          title: 'Total Profit',
-          value: `$${totalProfit.toFixed(2)}`,
-          icon: <FaWallet />,
-          bg: 'bg-gradient-to-b from-teal-200 to-teal-100',
-          borderColor: 'border-teal-600',
-          iconColor: 'bg-teal-600'
-        }, {
-          title: 'Remaining Cap',
-          value: `$${Remainingcap.toFixed(2)}`,
-          icon: <FaWallet />,
-          bg: 'bg-gradient-to-b from-purple-200 to-purple-100',
-          borderColor: 'border-purple-600',
-          iconColor: 'bg-purple-600'
-        }, {
-          title: 'Total Capiing',
-          value: `$${totalcap.toFixed(2)}`,
-          icon: <FaWallet />,
-          bg: 'bg-gradient-to-b from-teal-200 to-teal-100',
-          borderColor: 'border-teal-600',
-          iconColor: 'bg-teal-600'
-        }].map((card, index) => (
-          <div key={index} className={`${card.bg} ${card.borderColor} border-b-4 rounded-lg shadow-lg p-6`}>
-            <div className="flex items-center">
-              {/* <div className={`rounded-full p-2 ${card.iconColor} shadow-lg text-white`}>
-                {card.icon}
-              </div> */}
-              <div className="flex-1 text-right ml-4">
-                <h2 className="font-semibold text-gray-700 md:text-xl text-sm">{card.title}</h2>
-                <p className="text-3xl font-bold text-gray-900 md:text-2xl text-sm">{card.value}</p>
-                {card.onClick && (
-                  <button onClick={card.onClick} className="text-blue-600 hover:underline mt-2">View</button>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full px-4 mx-auto">
+  {[
+    {
+      title: 'My Investment',
+      value: `$${myInvestment.toFixed(2)}`,
+      icon: <FaWallet />,
+      bg: 'bg-gradient-to-b from-blue-200 to-blue-100',
+      borderColor: 'border-blue-600',
+      iconColor: 'bg-blue-600',
+    },
+    {
+      title: 'My Profit',
+      value: `$${myProfit.toFixed(2)}`,
+      icon: <FaWallet />,
+      bg: 'bg-gradient-to-b from-green-200 to-green-100',
+      borderColor: 'border-green-600',
+      iconColor: 'bg-green-600',
+    },
+    {
+      title: 'My Direct',
+      value: totalDirect,
+      icon: <FaUsers />,
+      bg: 'bg-gradient-to-b from-pink-200 to-pink-100',
+      borderColor: 'border-pink-500',
+      iconColor: 'bg-pink-600',
+      onClick: handleViewDirect,
+    },
+    {
+      title: 'My Team',
+      value: totalUsers,
+      icon: <FaUsers />,
+      bg: 'bg-gradient-to-b from-yellow-200 to-yellow-100',
+      borderColor: 'border-yellow-500',
+      iconColor: 'bg-yellow-500',
+      onClick: handleViewTeam,
+    },
+    {
+      title: 'Wallet Balance',
+      value: `$${walletBalance.toFixed(2)}`,
+      icon: <FaWallet />,
+      bg: 'bg-gradient-to-b from-purple-200 to-purple-100',
+      borderColor: 'border-purple-600',
+      iconColor: 'bg-purple-600',
+    },
+    {
+      title: 'Total Profit',
+      value: `$${totalProfit.toFixed(2)}`,
+      icon: <FaWallet />,
+      bg: 'bg-gradient-to-b from-teal-200 to-teal-100',
+      borderColor: 'border-teal-600',
+      iconColor: 'bg-teal-600',
+    },
+    {
+      title: 'Remaining Cap',
+      value: `$${Remainingcap.toFixed(2)}`,
+      icon: <FaWallet />,
+      bg: 'bg-gradient-to-b from-purple-200 to-purple-100',
+      borderColor: 'border-purple-600',
+      iconColor: 'bg-purple-600',
+    },
+    {
+      title: 'Total Capiing',
+      value: `$${totalcap.toFixed(2)}`,
+      icon: <FaWallet />,
+      bg: 'bg-gradient-to-b from-teal-200 to-teal-100',
+      borderColor: 'border-teal-600',
+      iconColor: 'bg-teal-600',
+    },
+  ].map((card, index) => (
+    <div
+      key={index}
+      className={`${card.bg} ${card.borderColor} border-b-4 rounded-lg shadow-lg p-6 flex flex-col`}
+    >
+      <div className="flex items-center">
+        <div className={`rounded-full p-3 ${card.iconColor} shadow-lg text-white`}>
+          {card.icon}
+        </div>
+        <div className="flex-1 text-right ml-4">
+          <h2 className="font-semibold text-gray-700 text-sm sm:text-base lg:text-lg">
+            {card.title}
+          </h2>
+          <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+            {card.value}
+          </p>
+          {card.onClick && (
+            <button
+              onClick={card.onClick}
+              className="text-blue-600 hover:underline mt-2 text-sm"
+            >
+              View
+            </button>
+          )}
+        </div>
       </div>
+    </div>
+  ))}
+</div>
+
 
       {/* Pop-Up for displaying user data */}
       {showPopup && (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+  <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
     <div className="bg-white rounded-lg p-6 w-full h-auto max-h-[80vh] overflow-y-auto mx-auto">
       <h2 className="text-xl font-bold mb-4">User Details</h2>
-      <ul className="space-y-2">
-        {popupData.map((user, index) => (
-          <li key={index} className="border-b pb-2">
-            <p>Name: {user.name} {user.lname}</p>
-            <p>Sponsor ID: {user.tokenId}</p>
-          </li>
-        ))}
+      <ul className="space-y-4">
+        {popupData.map((user, index) => {
+          console.log("User:", user);
+
+          // Ensure Transaction data exists and is an array
+          const transactions = user.Transaction || [];
+          console.log("Transaction",transactions)
+          if (!Array.isArray(transactions)) {
+            console.error("Transaction data is not an array:", transactions);
+          }
+
+          // Calculate total investment for "Deposit for gainbot"
+          const myInvestmentuser = transactions
+          .filter(tx => tx.title === "Deposit for gainbot" && tx.Status === "Paid")
+          .reduce((total, tx) => total + parseFloat(tx.amount || 0), 0);
+          return (
+            <li key={index} className="border-b pb-4">
+              <p><strong>Name:</strong> {user.name} {user.lname}</p>
+              <p><strong>Sponsor ID:</strong> {user.tokenId}</p>
+              {/* <p><strong>Transaction:</strong> Deposit of Gainbot</p> */}
+              <p><strong>Investment:</strong> $ {myInvestmentuser}</p>
+            </li>
+          );
+        })}
       </ul>
       <button
         onClick={() => setShowPopup(false)}
@@ -319,8 +360,9 @@ const Remainingcap = totalcap-totalProfit
       </button>
     </div>
   </div>
-  
-      )}
+)}
+
+
     </div>
   );
 };

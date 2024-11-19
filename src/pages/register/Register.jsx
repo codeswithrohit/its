@@ -136,12 +136,12 @@ const Register = () => {
                                     <a href="index.html" className="logo" data-cursor="Home">
                                         <img src="/logo1.jpeg" alt="Logo" />
                                     </a>
-                                    <h1>Join Today &amp; Receive up to 100 USDT Bonus</h1>
+                                    <h1>Join Today &amp; Receive up to 400% Bonus</h1>
                                     <p> Embark on a journey with FinFunder, where innovation meets opportunity in the dynamic world of blockchain and cryptocurrency. As the market evolves with heightened interest and regulatory developments, position yourself for success with our advanced, secure platform. Begin your trading adventure with a welcome bonus! </p>
                                 </div>
                             </div>
                             <div className="col-xl-6 col-lg-6 col-md-8 col-sm-10 position-relative">
-                                <div className="form-wrapper2 login-form">
+                                <div className="form-wrapper2 login-form bg-black">
                                     <h4 className="form-title text-white">Sign Up Your Account</h4>
                                     <form onSubmit={handleSubmit}>
                                         <div className="row">

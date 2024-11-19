@@ -41,7 +41,7 @@ const Login = () => {
           <div className="container-fluid px-0">
             <div className="row justify-content-center align-items-center gy-5">
               <div className="col-xl-6 col-lg-6 col-md-8 col-sm-10 position-relative">
-                <div className="form-wrapper2">
+                <div className="form-wrapper2 bg-black">
                   <h4 className="form-title text-white">Access Your Trading Hub</h4>
                   <form onSubmit={handleLogin}>
                     <div className="row">
@@ -81,7 +81,7 @@ const Login = () => {
                           </div>
                         </div>
                         <div className="col-sm-6 text-end">
-                          <div className="forgot-pass">
+                          <div className="forgot-pass text-white">
                             <a href="/forgotpassword">Forgot your password?</a>
                           </div>
                         </div>
