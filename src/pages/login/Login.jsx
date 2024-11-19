@@ -3,77 +3,53 @@ import { firebase } from '../../Firebase/config';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const navigate = useNavigate(); 
+  const [loading, setLoading] = useState(false); // Added loading state
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    setLoading(true); // Start loading
+  
     try {
-        await firebase.auth().signInWithEmailAndPassword(email, password);
-
-        const user = firebase.auth().currentUser; // Get the currently authenticated user
-        console.log("Logged in user:", user); // Log the user info
-
-        toast.success("Logged in successfully!");
-        navigate('/');// Redirect after login
+      await firebase.auth().signInWithEmailAndPassword(email, password);
+      toast.success('Logged in successfully!');
+      navigate('/'); // Redirect after login
     } catch (error) {
-        toast.error("Error: " + error.message);
+      // Check error codes to show specific messages
+      if (error.code === 'auth/user-not-found') {
+        toast.error('Email not found. Please check your email or sign up.');
+      } else if (error.code === 'auth/wrong-password') {
+        toast.error('Incorrect password. Please try again.');
+      } else {
+        toast.error('Error: ' + error.message);
+      }
+    } finally {
+      setLoading(false); // Stop loading
     }
-};
-
-
-  const togglePasswordVisibility = () => {
-    setPasswordVisible(!passwordVisible);
   };
+  
+
   return (
     <div>
       <main>
-        <div class="form-section white img-adjust">
-          <div class="linear-center"></div>
-          <div class="form-bg2">
-            <img
-              src="https://gainbot.io/default/images/1920x1080"
-              alt="Background image"
-            />
-          </div>
-          <div class="container-fluid px-0">
-            <div class="row justify-content-center align-items-center gy-5">
-              <div class="col-xl-6 col-lg-6 col-md-8 col-sm-10 position-relative">
-                <div class="eth-icon">
-                  <img src="default/images/450X450.html" alt="image" />
-                </div>
-                <div class="bnb-icon">
-                  <img src="default/images/450X450.html" alt="image" />
-                </div>
-                <div class="ada-icon">
-                  <img src="default/images/450X450.html" alt="image" />
-                </div>
-                <div class="sol-icon">
-                  <img src="default/images/450X450.html" alt="image" />
-                </div>
-                <div class="form-wrapper2">
-                  <h4 class="form-title">Access Your Trading Hub</h4>
-                  <form onSubmit={handleLogin} action="">
-                    <input
-                      type="hidden"
-                      name="_token"
-                      value="EhfO6qaw02t0QpZS4aPW84dZ3ub8q4G282EJAVxz"
-                      autocomplete="off"
-                    />
-
-                    <div class="row">
-                      <div class="col-12">
-                        <div class="form-inner">
-                          <label for="email">Email</label>
+        <ToastContainer /> {/* Added ToastContainer */}
+        <div className="form-section white img-adjust bg-black">
+          <div className="container-fluid px-0">
+            <div className="row justify-content-center align-items-center gy-5">
+              <div className="col-xl-6 col-lg-6 col-md-8 col-sm-10 position-relative">
+                <div className="form-wrapper2">
+                  <h4 className="form-title text-white">Access Your Trading Hub</h4>
+                  <form onSubmit={handleLogin}>
+                    <div className="row">
+                      <div className="col-12">
+                        <div className="form-inner">
+                          <label className="text-white" htmlFor="email">Email</label>
                           <input
                             type="email"
-                            name="email"
                             id="email"
                             placeholder="Enter Email"
                             required
@@ -82,74 +58,68 @@ const Login = () => {
                           />
                         </div>
                       </div>
-                      <div class="col-12">
-                        <div class="form-inner">
-                          <label for="password">Password</label>
+                      <div className="col-12">
+                        <div className="form-inner">
+                          <label className="text-white" htmlFor="password">Password</label>
                           <input
                             type="password"
                             id="password"
-                            name="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            autocomplete="current-password"
                             placeholder="Enter Password"
                             required
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                           />
                         </div>
                       </div>
-                      <div class="row mb-4">
-                        <div class="col-sm-6">
-                          <div class="form-inner mb-sm-0 mb-3">
-                            <div class="form-group">
-                              <input
-                                type="checkbox"
-                                id="remember_me"
-                                name="remember"
-                              />
-                              <label for="remember_me">Remember me</label>
+                      <div className="row mb-4">
+                        <div className="col-sm-6">
+                          <div className="form-inner">
+                            <div className="form-group">
+                              <input type="checkbox" id="remember_me" />
+                              <label className="text-white" htmlFor="remember_me">Remember me</label>
                             </div>
                           </div>
                         </div>
-
-                        <div class="col-sm-6 text-sm-end text-start d-flex justify-content-sm-end justify-content-start">
-                          <div class="forgot-pass">
+                        <div className="col-sm-6 text-end">
+                          <div className="forgot-pass">
                             <a href="/forgotpassword">Forgot your password?</a>
                           </div>
                         </div>
-                        <div className="!mt-8">
-                  <button
-                    type="submit"
-                    className="w-full shadow-xl py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-red-600 hover:bg-blue-700 focus:outline-none"
-                  >
-                    Log in
-                  </button>
-                </div>
+                      </div>
+                      <div className="!mt-8">
+                        <button
+                          type="submit"
+                          disabled={loading} // Disable button while loading
+                          className={`w-full shadow-xl py-3 px-4 text-sm tracking-wide rounded-lg text-white ${
+                            loading ? 'bg-gray-500' : 'bg-red-600 hover:bg-blue-700'
+                          }`}
+                        >
+                          {loading ? 'Logging in...' : 'Log in'} {/* Show loading text */}
+                        </button>
                       </div>
                     </div>
-                    <div class="have-account">
-                      <p className="mb-0 cursor-pointer">
-                        Don&#039;t have an account?{" "}
-                        <a href="/register">Sign Up</a>
+                    <div className="have-account text-white">
+                      <p className="mb-0">
+                        Don't have an account?{' '}
+                        <a className="text-white" href="/register">Sign Up</a>
                       </p>
                     </div>
                   </form>
                 </div>
               </div>
-              <div class="col-xl-6 col-lg-6">
-                <div class="form-left">
-                  <a href="/" class="logo" data-cursor="Home">
+              <div className="col-xl-6 col-lg-6">
+                <div className="form-left">
+                  <a href="/" className="logo">
                     <img
-                      src="https://gainbot.io/assets/files/FEStVr9r2DrfajwT.png"
+                      src="/logo1.jpeg"
                       alt="Logo"
                     />
                   </a>
                   <h1>Step Into the World of Smart Trading</h1>
                   <p>
                     Enter the realm of FinFunder, where cutting-edge blockchain
-                    technology meets seamless trading experiences. As the
-                    industry evolves amidst global regulatory developments, stay
-                    ahead with our secure, intuitive platform. Ready to make
-                    your mark in the dynamic world of cryptocurrency?
+                    technology meets seamless trading experiences. Stay ahead with
+                    our secure, intuitive platform.
                   </p>
                 </div>
               </div>

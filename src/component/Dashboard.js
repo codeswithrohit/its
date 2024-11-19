@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
-import { FaCopy, FaShare, FaWallet, FaUsers, FaCaretUp, FaExchangeAlt } from 'react-icons/fa';
-
+import React, { useState,useEffect } from 'react';
+import { FaCopy, FaShare, FaWallet, FaUsers, FaCaretUp, FaExchangeAlt, FaBell } from 'react-icons/fa';
+import { firebase } from '../Firebase/config';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const Dashboard = ({ userData, usersData }) => {
   const [copied, setCopied] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [popupData, setPopupData] = useState([]);
-
+  const [showNotification, setShowNotification] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState([]);
   const copyToClipboard = () => {
     const textField = document.createElement('textarea');
     textField.innerText = `https://gainbot.io/register?referral=${userData?.tokenId}`;
@@ -17,6 +21,33 @@ const Dashboard = ({ userData, usersData }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+console.log("notifications",notifications)
+  useEffect(() => {
+    // Fetch notifications from Firestore
+    fetchNotifications();
+  }, []);
+
+  // Function to fetch notifications
+  const fetchNotifications = async () => {
+    setLoading(true); // Set loading to true before fetching data
+    try {
+      const snapshot = await firebase.firestore().collection('notifications').get();
+      const notificationsList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setNotifications(notificationsList);
+      setLoading(false); // Set loading to false when data is fetched
+    } catch (error) {
+      toast.error('Failed to fetch notifications');
+      setLoading(false); // Set loading to false in case of error
+    }
+  };
+  const notificationsToday = notifications.filter(notification => {
+    const notificationDate = new Date(notification.date);
+    const today = new Date();
+    return notificationDate.toDateString() === today.toDateString();
+  });
   const shareReferral = async () => {
     try {
       await navigator.share({
@@ -84,13 +115,62 @@ const Remainingcap = totalcap-totalProfit
     setPopupData(teamUsers);
     setShowPopup(true);
   };
-  console.log("userdata",userData)
+  const handleBellClick = () => {
+    setShowNotification(prev => !prev);
+  };
 
   return (
     <div className="min-h-screen px-4 py-8">
+       <div className="absolute md:top-4 md:right-4 top-6 right-16">
+        <div className="relative">
+          <FaBell   onClick={handleBellClick} className="md:text-5xl text-4xl text-red-700 cursor-pointer" />
+          {notificationsToday.length > 0 && (
+            <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-600 rounded-full">
+              {notificationsToday.length}
+            </span>
+          )}
+        </div>
+        </div>
+        {showNotification && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="w-full h-full bg-gray-800 bg-opacity-90 top-0 overflow-y-auto overflow-x-hidden fixed sticky-0" id="chec-div">
+            <div className="w-full absolute z-10 right-0 h-full overflow-x-hidden transform translate-x-0 transition ease-in-out duration-700" id="notification">
+              <div className="2xl:w-4/12 bg-gray-50 h-screen overflow-y-auto p-8 absolute right-0">
+                <button onClick={() => setShowNotification(false)} className="absolute top-4 text-4xl right-2 text-red-500 hover:text-red-800">
+                  &times;
+                </button>
+                
+                <h2 className="focus:outline-none text-sm leading-normal pt-8 border-b pb-2 border-gray-300 text-gray-600">TODAY</h2>
+                {notificationsToday.map(notification => (
+                  <div key={notification.id} className="w-full p-3 mt-6 bg-white rounded flex">
+                    <div className="w-8 h-8 border rounded-full border-gray-200 flex items-center justify-center">
+                      <FaBell className="text-indigo-700" />
+                    </div>
+                    <div className="pl-3">
+                      <p className="focus:outline-none text-sm leading-none text-indigo-700">{notification.title}</p>
+                      <p className="focus:outline-none text-xs leading-3 pt-1 text-gray-500">{new Date(notification.date).toLocaleTimeString()}</p>
+                      <p className="focus:outline-none text-xs pt-2 text-gray-600">{notification.message}</p>
+                    </div>
+                  </div>
+                ))}
+                <div className="flex items-center justify-between">
+                  <hr className="w-full" />
+                  <p className="focus:outline-none text-sm flex flex-shrink-0 leading-normal px-3 py-16 text-gray-500">That's it for now :)</p>
+                  <hr className="w-full" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+   {loading && (
+        <div className="fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-50 bg-gray-900">
+          <div className="animate-spin border-t-4 border-blue-500 border-solid w-16 h-16 rounded-full"></div>
+        </div>
+      )}
 <div className="flex items-center justify-center ">
-  <div className="bg-white rounded-full p-4">
-    <img src='/gainbot.png' className='w-24 h-24 object-contain' />
+  <div className=" p-4">
+    <img src='/logo1.jpeg' className='w-24 h-24  rounded-lg object-contain' />
   </div>
 </div>
 
@@ -203,9 +283,9 @@ const Remainingcap = totalcap-totalProfit
         }].map((card, index) => (
           <div key={index} className={`${card.bg} ${card.borderColor} border-b-4 rounded-lg shadow-lg p-6`}>
             <div className="flex items-center">
-              <div className={`rounded-full p-2 ${card.iconColor} shadow-lg text-white`}>
+              {/* <div className={`rounded-full p-2 ${card.iconColor} shadow-lg text-white`}>
                 {card.icon}
-              </div>
+              </div> */}
               <div className="flex-1 text-right ml-4">
                 <h2 className="font-semibold text-gray-700 md:text-xl text-sm">{card.title}</h2>
                 <p className="text-3xl font-bold text-gray-900 md:text-2xl text-sm">{card.value}</p>

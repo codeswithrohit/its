@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { firebase } from '../../Firebase/config';
-import { FaTachometerAlt, FaUser, FaUserCircle, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
+import { FaTachometerAlt, FaUser, FaUserCircle, FaSignOutAlt, FaBars, FaTimes, FaBell } from 'react-icons/fa'; // Importing FaBell for Notifications
 import 'tailwindcss/tailwind.css';
 import { useNavigate } from 'react-router-dom';
 import Dashboard from '../../component/Admin/Dashboard';
@@ -8,6 +8,7 @@ import PaymentDetails from '../../component/Admin/PaymentDetails';
 import Transaction from '../../component/Admin/Transaction';
 import WithdrawTransaction from '../../component/Admin/WithdrawTransaction'; // Import the new component
 import Users from '../../component/Admin/Users';
+import Notifications from '../../component/Admin/Notifications'; // Import the new Notification component
 
 const Profile = () => {
   const navigate = useNavigate(); 
@@ -28,14 +29,16 @@ const Profile = () => {
     switch (activeTab) {
       case 'Dashboard':
         return <Dashboard />;
-        case 'Users':
-          return <Users />;
+      case 'Users':
+        return <Users />;
       case 'Transaction':
         return <Transaction />;
       case 'WithdrawTransaction': // Add case for Withdraw Transaction
         return <WithdrawTransaction />;
       case 'PaymentDetails':
         return <PaymentDetails />;
+      case 'Notifications': // Add case for Notifications tab
+        return <Notifications />;
       default:
         return <div>Dashboard Content</div>;
     }
@@ -62,6 +65,7 @@ const Profile = () => {
             { name: 'Transaction', icon: <FaUser /> },
             { name: 'WithdrawTransaction', icon: <FaUserCircle /> }, // New Withdraw Transaction tab
             { name: 'PaymentDetails', icon: <FaUserCircle /> },
+            { name: 'Notifications', icon: <FaBell /> }, // New Notification tab
             { name: 'Logout', icon: <FaSignOutAlt /> } // Add logout option
           ].map((tab, index) => (
             <button

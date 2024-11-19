@@ -124,7 +124,7 @@ const Register = () => {
     return (
         <div>
             <main>
-                <div className="form-section white img-adjust">
+                <div className="form-section white img-adjust bg-black ">
                     <div className="form-bg">
                         <img src="https://gainbot.io/default/images/1920x1080" alt="Background image" />
                     </div>
@@ -134,7 +134,7 @@ const Register = () => {
                             <div className="col-xl-6 col-lg-6">
                                 <div className="form-left">
                                     <a href="index.html" className="logo" data-cursor="Home">
-                                        <img src="https://gainbot.io/assets/files/FEStVr9r2DrfajwT.png" alt="Logo" />
+                                        <img src="/logo1.jpeg" alt="Logo" />
                                     </a>
                                     <h1>Join Today &amp; Receive up to 100 USDT Bonus</h1>
                                     <p> Embark on a journey with FinFunder, where innovation meets opportunity in the dynamic world of blockchain and cryptocurrency. As the market evolves with heightened interest and regulatory developments, position yourself for success with our advanced, secure platform. Begin your trading adventure with a welcome bonus! </p>
@@ -142,12 +142,12 @@ const Register = () => {
                             </div>
                             <div className="col-xl-6 col-lg-6 col-md-8 col-sm-10 position-relative">
                                 <div className="form-wrapper2 login-form">
-                                    <h4 className="form-title">Sign Up Your Account</h4>
+                                    <h4 className="form-title text-white">Sign Up Your Account</h4>
                                     <form onSubmit={handleSubmit}>
                                         <div className="row">
                                             <div className="col-12">
                                                 <div className="form-inner">
-                                                    <label htmlFor="name">First Name</label>
+                                                    <label className='text-white' htmlFor="name">First Name</label>
                                                     <input 
                                                         type="text" 
                                                         id="name" 
@@ -162,7 +162,7 @@ const Register = () => {
 
                                             <div className="col-12">
                                                 <div className="form-inner">
-                                                    <label htmlFor="lname">Last Name</label>
+                                                    <label className='text-white' htmlFor="lname">Last Name</label>
                                                     <input 
                                                         type="text" 
                                                         id="lname" 
@@ -177,7 +177,7 @@ const Register = () => {
 
                                             <div className="col-12">
                                                 <div className="form-inner">
-                                                    <label htmlFor="email">Email</label>
+                                                    <label className='text-white' htmlFor="email">Email</label>
                                                     <input 
                                                         type="email" 
                                                         id="email" 
@@ -192,7 +192,7 @@ const Register = () => {
 
                                             <div className="col-12">
                                                 <div className="form-inner">
-                                                    <label htmlFor="number">Mobile Number</label>
+                                                    <label className='text-white' htmlFor="number">Mobile Number</label>
                                                     <input 
                                                         type="number" 
                                                         id="number" 
@@ -207,7 +207,7 @@ const Register = () => {
 
                                             <div className="col-12">
                                                 <div className="form-inner">
-                                                    <label htmlFor="sponsorid">Sponsor Id</label>
+                                                    <label className='text-white' htmlFor="sponsorid">Sponsor Id</label>
                                                     <input 
                                                         value={mainReferralId} 
                                                         readOnly 
@@ -219,7 +219,7 @@ const Register = () => {
 
                                             <div className="col-12">
                                                 <div className="form-inner">
-                                                    <label htmlFor="password">Password</label>
+                                                    <label className='text-white' htmlFor="password">Password</label>
                                                     <input 
                                                         type="password" 
                                                         id="password" 
@@ -234,7 +234,7 @@ const Register = () => {
 
                                             <div className="col-12">
                                                 <div className="form-inner">
-                                                    <label htmlFor="cpassword">Confirm Password</label>
+                                                    <label className='text-white' htmlFor="cpassword">Confirm Password</label>
                                                     <input 
                                                         type="password" 
                                                         id="cpassword" 
@@ -260,7 +260,7 @@ const Register = () => {
                                             </div>
                                         </div>
                                         <div className="have-account">
-                                            <p className="mb-0">Already registered? <Link to="/login"> Sign In</Link></p>
+                                            <p className="mb-0">Already registered? <Link className='text-white' to="/login"> Sign In</Link></p>
                                         </div>
                                     </form>
                                 </div>
