@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { firebase } from '../../Firebase/config';
-import { FaTachometerAlt, FaUser, FaUserCircle, FaSignOutAlt, FaBars, FaTimes, FaBell } from 'react-icons/fa'; // Importing FaBell for Notifications
+import { FaTachometerAlt, FaUser, FaUserCircle, FaSignOutAlt, FaBars, FaTimes, FaBell, FaVideo } from 'react-icons/fa'; // Importing FaBell for Notifications
 import 'tailwindcss/tailwind.css';
 import { useNavigate } from 'react-router-dom';
 import Dashboard from '../../component/Admin/Dashboard';
@@ -9,6 +9,7 @@ import Transaction from '../../component/Admin/Transaction';
 import WithdrawTransaction from '../../component/Admin/WithdrawTransaction'; // Import the new component
 import Users from '../../component/Admin/Users';
 import Notifications from '../../component/Admin/Notifications'; // Import the new Notification component
+import Tradevideo from '../../component/Admin/Tradevideo';
 
 const Profile = () => {
   const navigate = useNavigate(); 
@@ -37,6 +38,8 @@ const Profile = () => {
         return <WithdrawTransaction />;
       case 'PaymentDetails':
         return <PaymentDetails />;
+        case 'Trade Video':
+        return <Tradevideo />;
       case 'Notifications': // Add case for Notifications tab
         return <Notifications />;
       default:
@@ -65,6 +68,7 @@ const Profile = () => {
             { name: 'Transaction', icon: <FaUser /> },
             { name: 'WithdrawTransaction', icon: <FaUserCircle /> }, // New Withdraw Transaction tab
             { name: 'PaymentDetails', icon: <FaUserCircle /> },
+            { name: 'Trade Video', icon: <FaVideo /> }, // New Notification tab
             { name: 'Notifications', icon: <FaBell /> }, // New Notification tab
             { name: 'Logout', icon: <FaSignOutAlt /> } // Add logout option
           ].map((tab, index) => (

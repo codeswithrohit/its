@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import { firebase } from '../../Firebase/config'
 import Navbar from '../../component/navbar/Navbar'
 import Top from '../../component/Top/Top'
 import Advanced from '../../component/Advanced/Advanced'
@@ -6,6 +7,20 @@ import Footer from '../../component/Footer/Footer'
 import Header from '../../component/Header/Header'
 
 const Trade = () => {
+  const [videoUrl, setVideoUrl] = useState('')
+  useEffect(() => {
+    const fetchVideo = async () => {
+      const tradeRef = firebase.firestore().collection('trades')
+      const snapshot = await tradeRef.orderBy("uploadDate", "desc").limit(1).get()
+
+      if (!snapshot.empty) {
+        const videoData = snapshot.docs[0].data()
+        setVideoUrl(videoData.videoUrl)
+      }
+    }
+
+    fetchVideo()
+  }, [])
   return (
     <div>
       <Header/>
@@ -26,7 +41,7 @@ const Trade = () => {
 </div>
 <div className="video-container relative ">
           <video
-            src="/trade1.mp4"
+            src={videoUrl}
             autoPlay
             muted
             loop

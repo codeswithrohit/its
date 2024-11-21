@@ -280,7 +280,10 @@ const GainbotArticle = () => {
       <li>Affiliate 5: 3%</li>
       <li>Affiliate 6: 2%</li>
       <li>Affiliate 7: 1%</li>
-      <li>Affiliate 8-15: 0.5% to 0.1%</li>
+      <li>Affiliate 8-12: 0.5%</li>
+      <li>Affiliate 13: 3%</li>
+      <li>Affiliate 14: 2%</li>
+      <li>Affiliate 15: 1%</li>
     </ul>
     <p className="text-white">
       The number of direct referrals you have will determine your level of earning:
