@@ -134,7 +134,7 @@ const Register = () => {
                             <div className="col-xl-6 col-lg-6">
                                 <div className="form-left">
                                     <a href="index.html" className="logo" data-cursor="Home">
-                                        <img src="/logo1.jpeg" alt="Logo" />
+                                        <img src="https://gainbot.io/assets/files/FEStVr9r2DrfajwT.png" alt="Logo" />
                                     </a>
                                     <h1>Join Today &amp; Receive up to 400% Bonus</h1>
                                     <p> Embark on a journey with FinFunder, where innovation meets opportunity in the dynamic world of blockchain and cryptocurrency. As the market evolves with heightened interest and regulatory developments, position yourself for success with our advanced, secure platform. Begin your trading adventure with a welcome bonus! </p>
@@ -151,6 +151,7 @@ const Register = () => {
                                                     <input 
                                                         type="text" 
                                                         id="name" 
+                                                            className="placeholder-white bg-transparent text-white border border-gray-300 rounded p-2 focus:outline-none"
                                                         name="name" 
                                                         value={formData.name} 
                                                         onChange={handleChange} 
@@ -169,6 +170,7 @@ const Register = () => {
                                                         name="lname" 
                                                         value={formData.lname} 
                                                         onChange={handleChange} 
+                                                            className="placeholder-white bg-transparent text-white border border-gray-300 rounded p-2 focus:outline-none"
                                                         placeholder="Enter Last Name" 
                                                         required 
                                                     />
@@ -183,6 +185,7 @@ const Register = () => {
                                                         id="email" 
                                                         name="email" 
                                                         value={formData.email} 
+                                                            className="placeholder-white bg-transparent text-white border border-gray-300 rounded p-2 focus:outline-none"
                                                         onChange={handleChange} 
                                                         placeholder="Enter Email" 
                                                         required 
@@ -198,6 +201,7 @@ const Register = () => {
                                                         id="number" 
                                                         name="number" 
                                                         value={formData.number} 
+                                                            className="placeholder-white bg-transparent text-white border border-gray-300 rounded p-2 focus:outline-none"
                                                         onChange={handleChange} 
                                                         placeholder="Enter Mobile Number" 
                                                         required 
@@ -211,6 +215,7 @@ const Register = () => {
                                                     <input 
                                                         value={mainReferralId} 
                                                         readOnly 
+                                                            className="placeholder-white bg-transparent text-white border border-gray-300 rounded p-2 focus:outline-none"
                                                         placeholder="Sponsor Id" 
                                                         required 
                                                     />
@@ -223,6 +228,7 @@ const Register = () => {
                                                     <input 
                                                         type="password" 
                                                         id="password" 
+                                                            className="placeholder-white bg-transparent text-white border border-gray-300 rounded p-2 focus:outline-none"
                                                         name="password" 
                                                         value={formData.password} 
                                                         onChange={handleChange} 
@@ -238,6 +244,7 @@ const Register = () => {
                                                     <input 
                                                         type="password" 
                                                         id="cpassword" 
+                                                            className="placeholder-white bg-transparent text-white border border-gray-300 rounded p-2 focus:outline-none"
                                                         name="cpassword" 
                                                         value={formData.cpassword} 
                                                         onChange={handleChange} 

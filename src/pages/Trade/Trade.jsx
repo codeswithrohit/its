@@ -26,7 +26,7 @@ const Trade = () => {
 </div>
 <div className="video-container relative ">
           <video
-            src="/trade.mp4"
+            src="/trade1.mp4"
             autoPlay
             muted
             loop

@@ -52,6 +52,7 @@ const Login = () => {
                             type="email"
                             id="email"
                             placeholder="Enter Email"
+                                className="placeholder-white bg-transparent text-white border border-gray-300 rounded p-2 focus:outline-none"
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -64,6 +65,7 @@ const Login = () => {
                           <input
                             type="password"
                             id="password"
+                                className="placeholder-white bg-transparent text-white border border-gray-300 rounded p-2 focus:outline-none"
                             placeholder="Enter Password"
                             required
                             value={password}
@@ -111,7 +113,7 @@ const Login = () => {
                 <div className="form-left">
                   <a href="/" className="logo">
                     <img
-                      src="/logo1.jpeg"
+                      src="https://gainbot.io/assets/files/FEStVr9r2DrfajwT.png"
                       alt="Logo"
                     />
                   </a>

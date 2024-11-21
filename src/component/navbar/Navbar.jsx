@@ -51,7 +51,7 @@ const Navbar = () => {
 
             <div class="header-logo">
               <a href="/">
-                <img src="/logo1.jpeg" alt="White Logo" />
+                <img src="https://gainbot.io/assets/files/FEStVr9r2DrfajwT.png" alt="White Logo" />
               </a>
             </div>
           </div>
@@ -59,7 +59,7 @@ const Navbar = () => {
           <div class="main-nav">
             <div class="mobile-logo-area d-xl-none d-flex justify-content-between align-items-center">
               <div class="mobile-logo-wrap">
-                <img src="/logo1.jpeg" alt="White Logo" />
+                <img src="https://gainbot.io/assets/files/FEStVr9r2DrfajwT.png" alt="White Logo" />
               </div>
               <div class="menu-close-btn" onClick={showMenu}>
                 <i class="bi bi-x-lg"></i>

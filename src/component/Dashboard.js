@@ -12,7 +12,7 @@ const Dashboard = ({ userData, usersData }) => {
   const [notifications, setNotifications] = useState([]);
   const copyToClipboard = () => {
     const textField = document.createElement('textarea');
-    textField.innerText = `https://gainbot.io/register?referral=${userData?.tokenId}`;
+    textField.innerText = `http://gainbot-ai.com/register?referral=${userData?.tokenId}`;
     document.body.appendChild(textField);
     textField.select();
     document.execCommand('copy');
@@ -53,7 +53,7 @@ console.log("notifications",notifications)
       await navigator.share({
         title: 'Share Referral Link',
         text: 'Join me on GainBot and earn rewards!',
-        url: `https://gainbot.io/register?referral=${userData?.tokenId}`,
+        url: `http://gainbot-ai.com/register?referral=${userData?.tokenId}`,
       });
     } catch (error) {
       console.error('Sharing failed', error);
@@ -172,7 +172,7 @@ const Remainingcap = totalcap-totalProfit
       )}
 <div className="flex items-center justify-center ">
   <div className=" p-4">
-    <img src='/logo1.jpeg' className='w-24 h-24  rounded-lg object-contain' />
+    <img src='https://gainbot.io/assets/files/FEStVr9r2DrfajwT.png' className='w-24 h-24  rounded-lg object-contain' />
   </div>
 </div>
 
@@ -197,14 +197,13 @@ const Remainingcap = totalcap-totalProfit
   <h1 className="text-4xl font-bold text-white text-center mb-8">Welcome To {userData?.name}</h1> */}
 </div>
 
-
-      <div className="bg-white rounded-lg shadow-lg px-6 py-3 mb-8 max-w-xl mx-auto">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4 text-center">Your Referral Code</h2>
+<h2 className="text-xl font-semibold text-white mb-2 text-center">Your Referral Code</h2>
+      <div className="bg-white rounded-lg shadow-lg px-4 py-3 mb-8 max-w-xl mx-auto">
         <div className="flex items-center justify-center space-x-4">
           <input
             type="text"
             readOnly
-            value={`https://gainbot.io/register?referral=${userData?.tokenId}`}
+            value={`http://gainbot-ai.com/register?referral=${userData?.tokenId}`}
             className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none"
           />
           <button
@@ -213,17 +212,24 @@ const Remainingcap = totalcap-totalProfit
           >
             {copied ? 'Copied!' : 'Copy'}
           </button>
+          <button
+          onClick={shareReferral}
+          className="w-64  py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg flex items-center justify-center transition-all"
+        >
+          <FaShare className="mr-2" />
+          Share Now
+        </button>
         </div>
-        <button
+        {/* <button
           onClick={shareReferral}
           className="w-full mt-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg flex items-center justify-center transition-all"
         >
           <FaShare className="mr-2" />
           Share Now
-        </button>
+        </button> */}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full px-4 mx-auto">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full px-4 mx-auto">
   {[
     {
       title: 'My Investment',
@@ -297,11 +303,11 @@ const Remainingcap = totalcap-totalProfit
       className={`${card.bg} ${card.borderColor} border-b-4 rounded-lg shadow-lg p-6 flex flex-col`}
     >
       <div className="flex items-center">
-        <div className={`rounded-full p-3 ${card.iconColor} shadow-lg text-white`}>
+        {/* <div className={`rounded-full p-3 ${card.iconColor} shadow-lg text-white`}>
           {card.icon}
-        </div>
-        <div className="flex-1 text-right ml-4">
-          <h2 className="font-semibold text-gray-700 text-sm sm:text-base lg:text-lg">
+        </div> */}
+        <div className="flex-1  ">
+          <h2 className="font-semibold text-center text-gray-700 text-sm sm:text-base lg:text-lg">
             {card.title}
           </h2>
           <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
