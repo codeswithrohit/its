@@ -2,6 +2,7 @@ import React, { useState,useEffect } from 'react';
 import { FaCopy, FaShare, FaWallet, FaUsers, FaCaretUp, FaExchangeAlt, FaBell } from 'react-icons/fa';
 import { firebase } from '../Firebase/config';
 import { toast, ToastContainer } from 'react-toastify';
+import { AiOutlineCopy, AiFillCheckCircle } from 'react-icons/ai';
 import 'react-toastify/dist/ReactToastify.css';
 const Dashboard = ({ userData, usersData }) => {
   const [copied, setCopied] = useState(false);
@@ -198,36 +199,55 @@ const Remainingcap = totalcap-totalProfit
 </div>
 
 <h2 className="text-xl font-semibold text-white mb-2 text-center">Your Referral Code</h2>
-      <div className="bg-white rounded-lg shadow-lg px-4 py-3 mb-8 max-w-xl mx-auto">
-        <div className="flex items-center justify-center space-x-4">
-          <input
-            type="text"
-            readOnly
-            value={`http://gainbot-ai.com/register?referral=${userData?.tokenId}`}
-            className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none"
-          />
-          <button
-            onClick={copyToClipboard}
-            className={`px-4 py-2 text-white rounded-lg transition ${copied ? 'bg-green-500' : 'bg-blue-600 hover:bg-blue-700'}`}
-          >
-            {copied ? 'Copied!' : 'Copy'}
-          </button>
-          <button
-          onClick={shareReferral}
-          className="w-64  py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg flex items-center justify-center transition-all"
-        >
-          <FaShare className="mr-2" />
-          Share Now
-        </button>
-        </div>
-        {/* <button
-          onClick={shareReferral}
-          className="w-full mt-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg flex items-center justify-center transition-all"
-        >
-          <FaShare className="mr-2" />
-          Share Now
-        </button> */}
-      </div>
+<div className=" rounded-lg shadow-lg px-6 py-2 mb-4 max-w-xl mx-auto border border-gray-200">
+  <div className="flex flex-col gap-2">
+    {/* Input field with better styling */}
+    <div className="relative">
+      <input
+        type="text"
+        readOnly
+        value={`http://gainbot-ai.com/register?referral=${userData?.tokenId}`}
+        className="w-full px-4 py-3 text-sm text-gray-800 bg-gray-50 border border-gray-300 rounded-md shadow-inner focus:ring-2 focus:ring-blue-500 focus:border-blue-500 truncate"
+      />
+    </div>
+
+    {/* Button Group */}
+    <div className="flex justify-between gap-2">
+      {/* Copy Button */}
+      <button
+        onClick={copyToClipboard}
+        className={`flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-md shadow-md transition-all ${
+          copied
+            ? 'bg-green-500 text-white hover:bg-green-600'
+            : 'bg-blue-600 text-white hover:bg-blue-700'
+        }`}
+      >
+        {copied ? (
+          <>
+            <AiFillCheckCircle className="text-lg" />
+            Copied
+          </>
+        ) : (
+          <>
+            <AiOutlineCopy className="text-lg" />
+            Copy Link
+          </>
+        )}
+      </button>
+
+      {/* Share Button */}
+      <button
+        onClick={shareReferral}
+        className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-sm font-medium text-white rounded-md shadow-md transition-all"
+      >
+        <FaShare className="text-lg" />
+        Share Link
+      </button>
+    </div>
+  </div>
+</div>
+
+
 
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full px-4 mx-auto">
   {[
