@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { firebase } from '../../Firebase/config';
 import { FaTachometerAlt, FaUser, FaUserCircle, FaSignOutAlt, FaBars, FaTimes, FaBell, FaVideo } from 'react-icons/fa'; // Importing FaBell for Notifications
 import 'tailwindcss/tailwind.css';
@@ -24,6 +24,22 @@ const Profile = () => {
       console.error('Error logging out: ', error);
     }
   };
+
+  const [isAdmin, setIsAdmin] = useState(false);
+
+   
+
+  useEffect(() => {
+    const isAdminInLocalStorage = localStorage.getItem('isAdmin') === 'true';
+    setIsAdmin(isAdminInLocalStorage);
+
+    if (!isAdminInLocalStorage) {
+      // If the user is not an admin, redirect them to the login page
+      navigate('/Admin/login');
+    }
+  }, [navigate]); // Fix dependency array
+  
+
 
   // Function to render content based on active tab
   const renderContent = () => {

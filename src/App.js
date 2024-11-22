@@ -11,6 +11,8 @@ import Trade from './pages/Trade/Trade';
 import Features from './pages/Features/Features';
 import Contact from './pages/Contact/Contact';
 import Dashboard from './pages/Admin/Dashboard';
+import Adminogin from './pages/Admin/login';
+import AdminRegister from './pages/Admin/register';
 import Profile from './pages/Profile';
 import { useState, useEffect, useRef } from "react";
 import { firebase } from '../src/Firebase/config';
@@ -567,6 +569,8 @@ function App() {
         <Route path='/contact' element={<Contact />} />
         <Route path='/Profile' element={<Profile />} />
         <Route path='/Admin/Dashboard' element={<Dashboard />} />
+        <Route path='/Admin/login' element={<Adminogin />} />
+        <Route path='/Admin/register' element={<AdminRegister />} />
         <Route path='/forgotpassword' element={<ForgotPassword />} />
       </Routes>
     </BrowserRouter>
