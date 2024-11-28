@@ -428,10 +428,19 @@ function App() {
   const distributeLevelIncome = async (user, percentage) => {
     if (Capping >= 4) {
       console.log("Capping limit reached. No further Sponsor Income updates.");
-      return 0; // Skip income distribution if capping is 4 or more
+      return 0;
     }
+  
     try {
-      const currentDateTime = new Date().toISOString();
+      const formatDate = (date) => {
+        const d = new Date(date);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+      };
+  
+      const currentDateTime = formatDate(new Date());
       const transactions = user.Transaction;
   
       if (!transactions || transactions.length === 0) {
@@ -439,9 +448,9 @@ function App() {
         return 0;
       }
   
-      // Filter for transactions with titles that start with "Trade Income"
-      const filteredTransactions = transactions.filter(
-        (transaction) => transaction.title.startsWith("Trade Income")
+      // Filter relevant transactions
+      const filteredTransactions = transactions.filter(transaction =>
+        transaction.title.startsWith("Trade Income")
       );
   
       if (filteredTransactions.length === 0) {
@@ -449,28 +458,29 @@ function App() {
         return 0;
       }
   
-      console.log("transaction level wise", filteredTransactions);
+      console.log("Filtered transactions level-wise:", filteredTransactions);
+  
       let totalIncome = 0;
   
       // Sort transactions by date
-      const sortedTransactions = filteredTransactions
-        .map((transaction) => new Date(transaction.date))
-        .sort((a, b) => a - b);
+      const sortedTransactions = filteredTransactions.sort(
+        (a, b) => new Date(a.date) - new Date(b.date)
+      );
   
-      const firstIncomeDate = sortedTransactions[0];
-      const lastIncomeDate = sortedTransactions[sortedTransactions.length - 1];
+      const firstIncomeDate = formatDate(sortedTransactions[0].date);
+      const lastIncomeDate = formatDate(sortedTransactions[sortedTransactions.length - 1].date);
   
       console.log("First income date:", firstIncomeDate);
       console.log("Last income date:", lastIncomeDate);
   
-      // Detect and log missing dates
+      // Detect missing dates
       const missingDates = [];
-      let currentDate = new Date(firstIncomeDate);
-      currentDate.setDate(currentDate.getDate() + 1);
+      let currentDate = new Date(sortedTransactions[0].date);
+      currentDate.setDate(currentDate.getDate() + 1); // Start from the day after the first date
   
-      while (currentDate <= lastIncomeDate) {
-        const dateString = currentDate.toLocaleDateString();
-        const existingIncomeForDate = transactions.find(
+      while (currentDate <= new Date(sortedTransactions[sortedTransactions.length - 1].date)) {
+        const dateString = formatDate(currentDate);
+        const existingIncomeForDate = transactions.some(
           transaction => transaction.title === `Affiliate Income from ${user.tokenId} of ${dateString}`
         );
   
@@ -480,35 +490,39 @@ function App() {
         currentDate.setDate(currentDate.getDate() + 1);
       }
   
-      const totalMissingDays = missingDates.length;
-      console.log(`Missing level income for ${totalMissingDays} days.`);
-      console.log("Missing dates:", missingDates.map(date => date.toLocaleDateString()));
+      console.log(`Missing level income for ${missingDates.length} days.`);
+      console.log("Missing dates:", missingDates.map(date => formatDate(date)));
   
-      if (totalMissingDays > 0) {
+      // Handle missing dates
+      if (missingDates.length > 0) {
         const batch = firebase.firestore().batch();
   
         missingDates.forEach(missingDate => {
-          const dateString = missingDate.toLocaleDateString();
-          const uniqueDepositId = `AffiliateIncome_${user.tokenId}_${missingDate.toISOString()}`;
+          const dateString = formatDate(missingDate);
+          const title = `Affiliate Income from ${user.tokenId} of ${dateString}`;
+  
+          // Calculate income for missing date
+          const dailyIncome = filteredTransactions.reduce((acc, transaction) => {
+            const transactionAmount = parseFloat(transaction.amount || 0);
+            return acc + transactionAmount * percentage;
+          }, 0);
   
           const depositData = {
-            id: uniqueDepositId,
-            amount: (percentage * 100).toFixed(2),  // Adjust the calculation as needed
-            date: missingDate.toISOString(),
-            method: 'Deposit',
-            title: `Affiliate Income from ${user.tokenId} of ${dateString}`,
+            amount: dailyIncome.toFixed(7),
+            date: formatDate(new Date()),
+            method: "Deposit",
+            title: title,
           };
   
-          batch.update(firebase.firestore().collection('users').doc(myuser.uid), {
+          const userRef = firebase.firestore().collection("users").doc(myuser.uid);
+          batch.update(userRef, {
             Transaction: firebase.firestore.FieldValue.arrayUnion(depositData),
             lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
           });
         });
   
         await batch.commit();
-        console.log(`Missing level income transactions updated for ${totalMissingDays} days.`);
-      } else {
-        console.log('All level income transactions are up to date.');
+        console.log(`Missing transactions updated for ${missingDates.length} days.`);
       }
   
       // Process daily transactions
@@ -517,11 +531,11 @@ function App() {
         const incomeFromTransaction = transactionAmount * percentage;
         totalIncome += incomeFromTransaction;
   
-        const today = new Date();
-        const todayString = today.toLocaleDateString();
+        const todayString = formatDate(new Date());
         const title = `Affiliate Income from ${user.tokenId} of ${todayString}`;
   
-        const existingDeposits = await firebase.firestore().collection('users')
+        const existingDeposits = await firebase.firestore()
+          .collection("users")
           .doc(myuser.uid)
           .get()
           .then(doc => doc.data().Transaction || [])
@@ -530,28 +544,35 @@ function App() {
         if (existingDeposits.length === 0) {
           const depositData = {
             amount: incomeFromTransaction.toFixed(7),
-            date: currentDateTime,
-            paymentdate: transaction.date,
-            method: 'Deposit',
+            date: formatDate(new Date()),
+            paymentdate: formatDate(transaction.date),
+            method: "Deposit",
             title: title,
           };
   
-          await firebase.firestore().collection('users').doc(myuser.uid).update({
+          await firebase.firestore().collection("users").doc(myuser.uid).update({
             Transaction: firebase.firestore.FieldValue.arrayUnion(depositData),
           });
   
-          console.log(`Transaction updated for level income for user: ${user.name} ${user.lname}, Income from ${transaction.title}: + ₹${incomeFromTransaction}`);
+          console.log(
+            `Transaction updated for level income for user: ${user.name} ${user.lname}, Income from ${transaction.title}: + ₹${incomeFromTransaction}`
+          );
         } else {
-          console.log(`Deposit already exists for level income from user: ${user.name} for transaction: ${transaction.title}`);
+          console.log(
+            `Deposit already exists for level income from user: ${user.name} for transaction: ${transaction.title}`
+          );
         }
       }
   
       return totalIncome;
     } catch (error) {
-      console.error('Error updating transaction: ', error);
+      console.error("Error updating transaction:", error);
       return 0;
     }
   };
+  
+  
+  
   
   
 
