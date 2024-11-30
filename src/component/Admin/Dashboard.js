@@ -21,6 +21,7 @@ const Dashboard = () => {
     fetchTransaction();
   }, []);
 
+
   // Filter transactions for title "Deposit for gainbot"
   const filteredTransactions = transactions.flatMap(user =>
     Array.isArray(user.Transaction) ?
@@ -134,7 +135,7 @@ const Dashboard = () => {
     }
   };
 
-
+  console.log("transaction",filteredTransactions)
   return (
     <div>
           <div className="p-6">
@@ -149,7 +150,7 @@ const Dashboard = () => {
                 <th className="border-b px-4 py-2">Email</th>
                 <th className="border-b px-4 py-2">Number</th>
                 <th className="border-b px-4 py-2">Amount</th>
-                <th className="border-b px-4 py-2">Screenshot</th>
+                <th className="border-b px-4 py-2">Transaction hash</th>
                 <th className="border-b px-4 py-2">Update Status</th>
               </tr>
             </thead>
@@ -160,13 +161,7 @@ const Dashboard = () => {
                   <td className="border-b px-4 py-2">{transaction.email}</td>
                   <td className="border-b px-4 py-2">{transaction.number}</td>
                   <td className="border-b px-4 py-2">$ {transaction.amount}</td>
-                  <td className="border-b px-4 py-2">
-                    {transaction.screenshot && (
-                      <a href={transaction.screenshot} target="_blank" rel="noopener noreferrer">
-                        View Image
-                      </a>
-                    )}
-                  </td>
+                  <td className="border-b px-4 py-2">{transaction.transactionhash}</td>
                   <td className="border-b px-4 py-2">
                     <select
                       value={transaction.Status} // Use the transaction's current status

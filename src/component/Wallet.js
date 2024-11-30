@@ -9,6 +9,7 @@ import { PiHandDepositFill } from "react-icons/pi";
 const Walllet = () => {
   const [activeTab, setActiveTab] = useState('deposit');
   const [amount, setAmount] = useState('');
+  const [transactionhash, setTransactionhash] = useState('');
   const [loading, setLoading] = useState(false);
   const [userloading, setUserLoading] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -89,20 +90,18 @@ const Walllet = () => {
       toast.error(`Minimum deposit amount is $${MINIMUM_DEPOSIT}.`);
       return;
     }
-    if (!paymentScreenshot) {
-      toast.error("Please upload a screenshot of your payment.");
+   
+    if (!transactionhash) {
+      toast.error("Transaction hash is required.");
       return;
     }
-
+  
     setLoading(true);
     const user = firebase.auth().currentUser;
     const currentDateTime = new Date().toISOString();
     const total = Number(amount) + Number(totalBalance);
 
-    const storageRef = firebase.storage().ref();
-    const screenshotRef = storageRef.child(`payments/${user.uid}/${paymentScreenshot.name}`);
-    await screenshotRef.put(paymentScreenshot);
-    const screenshotURL = await screenshotRef.getDownloadURL();
+  
 
     const depositData = {
       amount: amount,
@@ -110,7 +109,7 @@ const Walllet = () => {
       method: "Deposit",
       title: 'Deposit for gainbot',
       totalbalance: total,
-      screenshot: screenshotURL,
+      transactionhash:transactionhash,
       Status: "Pending"
     };
 
@@ -270,8 +269,15 @@ const Walllet = () => {
                 
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-semibold mb-2">Upload Screenshot of Payment</label>
-                <input type="file" onChange={handleFileChange} className="w-full p-2 border rounded-lg" />
+                <label className="block text-sm font-semibold mb-2">Enter Transaction Hash</label>
+                <input
+  type="text"
+  placeholder="Enter Transaction Hash"
+  value={transactionhash}
+  onChange={(e) => setTransactionhash(e.target.value)}
+  className="w-full p-2 outline-none text-lg text-gray-900"
+/>
+
               </div>
               {qrCodes.map((qr) => (
               <div key={qr.id} className="mb-6 text-center">
