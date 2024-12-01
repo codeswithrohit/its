@@ -17,6 +17,7 @@ import Real from '../../component/Real/Real'
 import Footer from '../../component/Footer/Footer'
 
 const home = () => {
+  
   return (
     <div>
       <Header/>

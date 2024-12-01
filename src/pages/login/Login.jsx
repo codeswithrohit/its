@@ -17,7 +17,7 @@ const Login = () => {
     try {
       await firebase.auth().signInWithEmailAndPassword(email, password);
       toast.success('Logged in successfully!');
-      navigate('/'); // Redirect after login
+      navigate('/Profile'); // Redirect after login
     } catch (error) {
       // Check error codes to show specific messages
       if (error.code === 'auth/user-not-found') {

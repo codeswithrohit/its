@@ -173,6 +173,8 @@ function App() {
   
     return () => clearInterval(interval);
   }, [lastUpdated, myuser, hasUpdatedToday]);
+
+  
   
   const distributeInvestmentIncome = async () => {
     if (Capping >= 4) {
@@ -204,15 +206,13 @@ function App() {
           console.log("Last income date:", lastIncomeDate);
   
           const today = new Date();
-          const todayString = today.toLocaleDateString();
+          const todayString = today.toLocaleDateString('en-GB');;
           const existingIncomeToday = transactions.some(
             transaction => transaction.title === `Trade Income of ${todayString}`
           );
   
           if (!existingIncomeToday) {
-            const uniqueDepositId = `TradeIncome_${myuser.uid}_${today.toISOString()}`;
             const depositData = {
-              id: uniqueDepositId,
               amount: percentageAmount.toFixed(2),
               date: today.toISOString(),
               method: 'Deposit',
@@ -235,7 +235,7 @@ function App() {
           currentDate.setDate(currentDate.getDate() + 1);
   
           while (currentDate <= lastIncomeDate) {
-            const dateString = currentDate.toLocaleDateString();
+            const dateString = currentDate.toLocaleDateString('en-GB');;
             const existingIncomeForDate = transactions.find(
               transaction => transaction.title === `Trade Income of ${dateString}`
             );
@@ -248,19 +248,17 @@ function App() {
   
           const totalMissingDays = missingDates.length;
           console.log(`Missing investment income for ${totalMissingDays} days.`);
-          console.log("Missing dates:", missingDates.map(date => date.toLocaleDateString()));
+          console.log("Missing dates:", missingDates.map(date => date.toLocaleDateString('en-GB')));
   
           if (totalMissingDays > 0) {
             const batch = firebase.firestore().batch();
             missingDates.forEach(missingDate => {
-              const dateString = missingDate.toLocaleDateString();
-              const uniqueDepositId = `TradeIncome_${myuser.uid}_${missingDate.toISOString()}`;
+              const dateString = missingDate.toLocaleDateString('en-GB');
   
-              const existingTransaction = transactions.find(transaction => transaction.id === uniqueDepositId);
+              const existingTransaction = transactions.find(transaction => transaction.title === `Trade Income of ${dateString}`);
   
               if (!existingTransaction) {
                 const depositData = {
-                  id: uniqueDepositId,
                   amount: percentageAmount.toFixed(2),
                   date: missingDate.toISOString(),
                   method: 'Deposit',
@@ -283,14 +281,11 @@ function App() {
           console.log("No investment income transactions found. Initial deposit will be created for today.");
   
           const currentDateTime = new Date().toISOString();
-          console.log("currentdatetime",currentDateTime)
-          const uniqueDepositId = `TradeIncome_${myuser.uid}_${currentDateTime}`;
           const depositData = {
-            id: uniqueDepositId,
             amount: percentageAmount.toFixed(2),
             date: currentDateTime,
             method: 'Deposit',
-            title: `Trade Income of ${new Date().toLocaleDateString()}`,
+            title: `Trade Income of ${new Date().toLocaleDateString('en-GB')}`,
           };
   
           await userRef.update({
