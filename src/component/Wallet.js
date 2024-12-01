@@ -145,7 +145,7 @@ const Walllet = () => {
     .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
-
+console.log("paginationtransaction",paginatedTransactions)
   return (
     <div className="flex">
       {userloading && (
@@ -182,37 +182,41 @@ const Walllet = () => {
               </select>
             </div>
             <div className="p-4 bg-gray-100 rounded-lg text-gray-600">
-              {paginatedTransactions.length > 0 ? (
-                paginatedTransactions.map((transaction, index) => (
-                  <div key={index} className="flex items-center justify-between border-b py-2">
-                    <div>
-                      <div className="flex items-center">
-                        <PiHandDepositFill className="text-green-600 mr-2" />
-                        <span className="font-bold text-xs md:text-sm">
-                          {transaction.title} {transaction.Status && `(${transaction.Status})`}
-                        </span>
-                      </div>
-                      <p className="text-xs text-center text-gray-500">
-                        {new Date(transaction.date).toLocaleString()}
-                      </p>
-                    </div>
-                    <div>
-                      <p
-                        className={`text-sm font-bold ${
-                          transaction.method === 'Withdraw' ? 'text-red-500' : 'text-green-600'
-                        }`}
-                      >
-                        <FaDollarSign className="inline mr-1" />
-                        {transaction.method === 'Withdraw' ? '-' : '+'}
-                        {transaction.amount}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p>No transactions yet.</p>
-              )}
+  {paginatedTransactions.length > 0 ? (
+    // Sort the transactions by date in descending order
+    paginatedTransactions
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .map((transaction, index) => (
+        <div key={index} className="flex items-center justify-between border-b py-2">
+          <div>
+            <div className="flex items-center">
+              <PiHandDepositFill className="text-green-600 mr-2" />
+              <span className="font-bold text-xs md:text-sm">
+                {transaction.title} {transaction.Status && `(${transaction.Status})`}
+              </span>
             </div>
+            <p className="text-xs text-center text-gray-500">
+              {new Date(transaction.date).toLocaleString()}
+            </p>
+          </div>
+          <div>
+            <p
+              className={`text-sm font-bold ${
+                transaction.method === 'Withdraw' ? 'text-red-500' : 'text-green-600'
+              }`}
+            >
+              <FaDollarSign className="inline mr-1" />
+              {transaction.method === 'Withdraw' ? '-' : '+'}
+              {transaction.amount}
+            </p>
+          </div>
+        </div>
+      ))
+  ) : (
+    <p>No transactions yet.</p>
+  )}
+</div>
+
             {totalPages > 1 && (
             <div className="flex justify-center space-x-2 mt-4">
               <button
@@ -282,7 +286,7 @@ const Walllet = () => {
               {qrCodes.map((qr) => (
               <div key={qr.id} className="mb-6 text-center">
                      <span className="text-sm text-gray-800 font-semibold">Scan this qr code to deposit money</span>
-        <img src={qr.imageUrl}  alt="Arcade" className="w-full h-48 object-cover rounded-md mb-4" />
+        <img src={qr.imageUrl}  alt="Arcade" className="w-full h-48 object-contain rounded-md mb-4" />
         <div className="mt-6 bg-black p-4 rounded-lg relative">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm text-gray-300 font-semibold">Copy id</span>

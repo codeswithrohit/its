@@ -283,6 +283,7 @@ function App() {
           console.log("No investment income transactions found. Initial deposit will be created for today.");
   
           const currentDateTime = new Date().toISOString();
+          console.log("currentdatetime",currentDateTime)
           const uniqueDepositId = `TradeIncome_${myuser.uid}_${currentDateTime}`;
           const depositData = {
             id: uniqueDepositId,
