@@ -19,7 +19,7 @@ const Header = () => {
                   />
                 </div>
                 <h6>BTC/USDT</h6>
-                <span>58695 (-192.11164885113%)</span>
+                <span>104,088 (-192.11164885113%)</span>
               </div>
               <div class="marquee-item">
                 <div class="marquee-item-img">
@@ -29,7 +29,7 @@ const Header = () => {
                   />
                 </div>
                 <h6>ETH/USDT</h6>
-                <span>2310.07 (1.33%)</span>
+                <span>4868 (1.33%)</span>
               </div>
               <div class="marquee-item">
                 <div class="marquee-item-img">
@@ -59,7 +59,7 @@ const Header = () => {
                   />
                 </div>
                 <h6>SOL/USDT</h6>
-                <span>132.33 (1.016%)</span>
+                <span>264.399 (1.016%)</span>
               </div>
               <div class="marquee-item">
                 <div class="marquee-item-img">

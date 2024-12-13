@@ -19,7 +19,7 @@ const Walllet = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filterOption, setFilterOption] = useState('');
   const itemsPerPage = 10;
-
+  const [searchQuery, setSearchQuery] = useState('');
   const MINIMUM_DEPOSIT = 25;
 
   useEffect(() => {
@@ -135,10 +135,12 @@ const Walllet = () => {
   };
 
   const filteredTransactions = userData?.Transaction
-    ? userData.Transaction.filter(transaction =>
-        !filterOption || transaction.title.startsWith(filterOption)
-      )
-    : [];
+  ? userData.Transaction.filter(transaction => {
+      const matchesFilter = !filterOption || transaction.title.startsWith(filterOption);
+      const matchesSearch = !searchQuery || transaction.title.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesFilter && matchesSearch;
+    })
+  : [];
 
   const paginatedTransactions = filteredTransactions
     .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -180,6 +182,16 @@ console.log("paginationtransaction",paginatedTransactions)
                 <option value="Withdraw">Withdraw</option>
                 <option value="Deposit">Deposit</option>
               </select>
+            </div>
+            <div className="mb-4">
+              <label className="block text-white font-semibold mb-2">Search by Title</label>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by title"
+                className="p-2 border bg-white rounded-lg w-36"
+              />
             </div>
             <div className="p-4 bg-gray-100 rounded-lg text-gray-600">
   {paginatedTransactions.length > 0 ? (
