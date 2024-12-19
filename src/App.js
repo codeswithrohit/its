@@ -160,9 +160,9 @@ function App() {
       if (now.toDateString() !== lastUpdateDate.toDateString() && !hasUpdatedToday) {
         await distributeInvestmentIncome(); // Update missing dates
         setHasUpdatedToday(true); 
-        console.log(`Data updated today at ${now.toLocaleTimeString()}`);
+        // console.log(`Data updated today at ${now.toLocaleTimeString()}`);
       } else {
-        console.log("Data was already updated today.");
+        // console.log("Data was already updated today.");
       }
     };
   
@@ -202,8 +202,8 @@ function App() {
           let firstIncomeDate = investmentIncomeTransactions[0];
           let lastIncomeDate = investmentIncomeTransactions[investmentIncomeTransactions.length - 1];
   
-          console.log("First income date:", firstIncomeDate);
-          console.log("Last income date:", lastIncomeDate);
+          // console.log("First income date:", firstIncomeDate);
+          // console.log("Last income date:", lastIncomeDate);
   
           const today = new Date();
           const todayString = today.toLocaleDateString('en-GB');;
@@ -247,8 +247,8 @@ function App() {
           }
   
           const totalMissingDays = missingDates.length;
-          console.log(`Missing investment income for ${totalMissingDays} days.`);
-          console.log("Missing dates:", missingDates.map(date => date.toLocaleDateString('en-GB')));
+          // console.log(`Missing investment income for ${totalMissingDays} days.`);
+          // console.log("Missing dates:", missingDates.map(date => date.toLocaleDateString('en-GB')));
   
           if (totalMissingDays > 0) {
             const batch = firebase.firestore().batch();
@@ -275,7 +275,7 @@ function App() {
             await batch.commit();
             console.log(`Missing transactions updated for ${missingDates.length} days.`);
           } else {
-            console.log('No missing dates found. All investment income transactions are up to date.');
+            // console.log('No missing dates found. All investment income transactions are up to date.');
           }
         } else {
           console.log("No investment income transactions found. Initial deposit will be created for today.");
