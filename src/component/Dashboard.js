@@ -89,10 +89,20 @@ console.log("notifications",notifications)
       }
       return total + parseFloat(tx.amount || 0); // Add the amount for other transactions
     }, 0);
+
+    const totalProfitcap = transactions
+    .filter(tx => tx.title !== "Deposit for gainbot" && tx.title !== "Withdraw from gainbot")
+    .reduce((total, tx) => {
+      // Check if the transaction method starts with "Withdraw" and status is either "Pending" or "Paid"
+      if (tx.method.startsWith("Withdraw") && (tx.Status === "Pending" || tx.Status === "Paid")) {
+        return total + parseFloat(tx.amount || 0); // Subtract the amount for withdrawal transactions
+      }
+      return total + parseFloat(tx.amount || 0); // Add the amount for other transactions
+    }, 0);
     const Capping = myInvestment !== 0 ? totalProfit / myInvestment : 0;
 
 const totalcap = myInvestment*4
-const Remainingcap = totalcap-totalProfit
+const Remainingcap = totalcap-totalProfitcap
   const userTokenId = userData?.tokenId;
   const totalUsers = usersData.filter(user => {
     const referralIds = user.referralId ? user.referralId.split(',') : [];
@@ -301,6 +311,14 @@ const Remainingcap = totalcap-totalProfit
       borderColor: 'border-teal-600',
       iconColor: 'bg-teal-600',
     },
+    // {
+    //   title: 'Our Total Profit',
+    //   value: `$${totalProfitcap.toFixed(2)}`,
+    //   icon: <FaWallet />,
+    //   bg: 'bg-gradient-to-b from-teal-200 to-teal-100',
+    //   borderColor: 'border-teal-600',
+    //   iconColor: 'bg-teal-600',
+    // },
     {
       title: 'Remaining Cap',
       value: `$${Remainingcap.toFixed(2)}`,
