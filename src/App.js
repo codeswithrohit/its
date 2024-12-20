@@ -435,6 +435,15 @@ function App() {
         const year = d.getFullYear();
         return `${day}/${month}/${year}`;
       };
+      const parseDate = (date) => {
+        // Handle "DD/MM/YYYY" format
+        if (date.includes('/')) {
+          const [day, month, year] = date.split('/');
+          return new Date(`${year}-${month}-${day}`);
+        }
+        // Default to ISO format or standard Date input
+        return new Date(date);
+      };
   
       const currentDateTime = formatDate(new Date());
       const transactions = user.Transaction;
@@ -448,6 +457,10 @@ function App() {
       const filteredTransactions = transactions.filter(transaction =>
         transaction.title.startsWith("Trade Income")
       );
+
+      const filteredTransactionsaffiliate = transactions.filter(transaction =>
+        transaction.title.startsWith("Affiliate Income")
+      );
   
       if (filteredTransactions.length === 0) {
         console.log(`No relevant transactions found for user: ${user.name}`);
@@ -459,15 +472,17 @@ function App() {
       let totalIncome = 0;
   
       // Sort transactions by date
-      const sortedTransactions = filteredTransactions.sort(
+      const sortedTransactions = filteredTransactionsaffiliate.sort(
         (a, b) => new Date(a.date) - new Date(b.date)
       );
+  console.log("sortedtransaction",sortedTransactions)
+
   
-      const firstIncomeDate = formatDate(sortedTransactions[0].date);
-      const lastIncomeDate = formatDate(sortedTransactions[sortedTransactions.length - 1].date);
-  
-      console.log("First income date:", firstIncomeDate);
-      console.log("Last income date:", lastIncomeDate);
+  const firstIncomeDate = formatDate(parseDate(sortedTransactions[0].date));
+  const lastIncomeDate = formatDate(parseDate(sortedTransactions[sortedTransactions.length - 1].date));
+
+  console.log("First income date affilate:", firstIncomeDate);
+  console.log("Last income date affilate:", lastIncomeDate);
   
       // Detect missing dates
       const missingDates = [];
